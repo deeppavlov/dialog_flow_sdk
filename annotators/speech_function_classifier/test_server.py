@@ -20,7 +20,12 @@ def run_test(handler):
         }
     )
     print(f"test name: {hypothesis}")
-    assert hypothesis == [['React.Rejoinder.Support.Response.Resolve', 'React.Rejoinder.Confront.Response.Re-challenge']]
+    assert hypothesis == [
+        [
+            "React.Rejoinder.Support.Response.Resolve",
+            "React.Rejoinder.Confront.Response.Re-challenge",
+        ]
+    ]
     print("Success")
 
 

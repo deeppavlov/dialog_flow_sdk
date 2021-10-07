@@ -29,7 +29,9 @@ flows = {
         GRAPH: {
             "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
                 RESPONSE: "",
-                TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
+                TRANSITIONS: {
+                    "node1": cnd.exact_match("Hi")
+                },  # If "Hi" == request of user then we make the transition
             },
             "node1": {
                 RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
@@ -84,7 +86,9 @@ def turn_handler(
     out_response = ctx.last_response
     # the next condition branching needs for testing
     if true_out_response is not None and true_out_response != out_response:
-        raise Exception(f"{in_request=} -> true_out_response != out_response: {true_out_response} != {out_response}")
+        raise Exception(
+            f"{in_request=} -> true_out_response != out_response: {true_out_response} != {out_response}"
+        )
     else:
         logging.info(f"{in_request=} -> {out_response}")
     return out_response, ctx
@@ -93,15 +97,27 @@ def turn_handler(
 # testing
 testing_dialog = [
     ("Hi", "Hi, how are you?"),  # start_node -> node1
-    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
-    ("Let's talk about music.", "Sorry, I can not talk about music now."),  # node2 -> node3
+    (
+        "i'm fine, how are you?",
+        "Good. What do you want to talk about?",
+    ),  # node1 -> node2
+    (
+        "Let's talk about music.",
+        "Sorry, I can not talk about music now.",
+    ),  # node2 -> node3
     ("Ok, goodbye.", "bye"),  # node3 -> node4
     ("Hi", "Hi, how are you?"),  # node4 -> node1
     ("stop", "Ooops"),  # node1 -> fallback_node
     ("stop", "Ooops"),  # fallback_node -> fallback_node
     ("Hi", "Hi, how are you?"),  # fallback_node -> node1
-    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
-    ("Let's talk about music.", "Sorry, I can not talk about music now."),  # node2 -> node3
+    (
+        "i'm fine, how are you?",
+        "Good. What do you want to talk about?",
+    ),  # node1 -> node2
+    (
+        "Let's talk about music.",
+        "Sorry, I can not talk about music now.",
+    ),  # node2 -> node3
     ("Ok, goodbye.", "bye"),  # node3 -> node4
 ]
 
@@ -109,7 +125,9 @@ testing_dialog = [
 def run_test():
     ctx = {}
     for in_request, true_out_response in testing_dialog:
-        _, ctx = turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
+        _, ctx = turn_handler(
+            in_request, ctx, actor, true_out_response=true_out_response
+        )
 
 
 # interactive mode

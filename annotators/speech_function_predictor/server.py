@@ -11,12 +11,18 @@ from model import init_model
 
 sentry_sdk.init(os.getenv("SENTRY_DSN"))
 
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"]
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -28,8 +34,13 @@ def predict(label_name):
         class_id = class_dict[label_name]
     except KeyError:
         return {}
-    sorted_classes = sorted(enumerate(counters[class_id]), reverse=True, key=lambda x: x[1])[:5]
-    return [{"prediction": label_to_name[label], "confidence": probability} for label, probability in sorted_classes]
+    sorted_classes = sorted(
+        enumerate(counters[class_id]), reverse=True, key=lambda x: x[1]
+    )[:5]
+    return [
+        {"prediction": label_to_name[label], "confidence": probability}
+        for label, probability in sorted_classes
+    ]
 
 
 try:

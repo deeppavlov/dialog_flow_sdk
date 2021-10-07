@@ -17,11 +17,15 @@ def init_model():
             samples[sample["id"]]["text"] = sample["value"]["text"]
             samples[sample["id"]]["start"] = int(sample["value"]["start"])
             if "paragraphlabels" in sample["value"]:
-                samples[sample["id"]]["paragraphlabels"] = sample["value"]["paragraphlabels"][0]
+                samples[sample["id"]]["paragraphlabels"] = sample["value"][
+                    "paragraphlabels"
+                ][0]
             if "choices" in sample["value"]:
                 samples[sample["id"]]["choices"] = sample["value"]["choices"][0]
 
-        sorted_samples = sorted([(samples[sample_id]["start"], sample_id) for sample_id in samples])
+        sorted_samples = sorted(
+            [(samples[sample_id]["start"], sample_id) for sample_id in samples]
+        )
         texts = []
         labels = []
         speakers = []

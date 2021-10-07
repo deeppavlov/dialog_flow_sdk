@@ -8,7 +8,8 @@ from dff.core import Context, Actor, Node
 import dff.transitions as trn
 
 logging.basicConfig(
-    format="%(asctime)s-%(name)15s:%(lineno)3s:%(funcName)20s():%(levelname)s - %(message)s", level=logging.DEBUG
+    format="%(asctime)s-%(name)15s:%(lineno)3s:%(funcName)20s():%(levelname)s - %(message)s",
+    level=logging.DEBUG,
 )
 logger = logging.getLogger(__name__)
 
@@ -89,7 +90,9 @@ flows = {
 }
 
 ctx = Context()
-actor = Actor(flows, start_node_label=("root", "start"), fallback_node_label=("root", "fallback"))
+actor = Actor(
+    flows, start_node_label=("root", "start"), fallback_node_label=("root", "fallback")
+)
 while True:
     in_text = input("you: ")
     ctx.add_request(in_text)

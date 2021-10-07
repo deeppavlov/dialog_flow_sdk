@@ -15,12 +15,16 @@ def always_true_condition(ctx: Context, actor: Actor, *args, **kwargs) -> bool:
     return True
 
 
-def greeting_flow_n2_transition(ctx: Context, actor: Actor, *args, **kwargs) -> tuple[str, str, float]:
+def greeting_flow_n2_transition(
+    ctx: Context, actor: Actor, *args, **kwargs
+) -> tuple[str, str, float]:
     return ("greeting_flow", "node2", 1.0)
 
 
 def high_priority_node_transition(flow_label, node_label):
-    def transition(ctx: Context, actor: Actor, *args, **kwargs) -> tuple[str, str, float]:
+    def transition(
+        ctx: Context, actor: Actor, *args, **kwargs
+    ) -> tuple[str, str, float]:
         return (flow_label, node_label, 2.0)
 
     return transition
@@ -32,8 +36,12 @@ flows = {
             "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
                 RESPONSE: "",
                 TRANSITIONS: {
-                    ("music_flow", "node1"): cnd.regexp(r"talk about music"),  # first check
-                    ("greeting_flow", "node1"): cnd.regexp(r"hi|hello", re.IGNORECASE),  # second check
+                    ("music_flow", "node1"): cnd.regexp(
+                        r"talk about music"
+                    ),  # first check
+                    ("greeting_flow", "node1"): cnd.regexp(
+                        r"hi|hello", re.IGNORECASE
+                    ),  # second check
                     "fallback_node": always_true_condition,  # third check
                     # "fallback_node" is equivalent to ("global_flow", "fallback_node")
                 },
@@ -41,9 +49,15 @@ flows = {
             "fallback_node": {  # We get to this node if an error occurred while the agent was running
                 RESPONSE: "Ooops",
                 TRANSITIONS: {
-                    ("music_flow", "node1"): cnd.regexp(r"talk about music"),  # first check
-                    ("greeting_flow", "node1"): cnd.regexp(r"hi|hello", re.IGNORECASE),  # second check
-                    trn.previous(): cnd.regexp(r"previous", re.IGNORECASE),  # third check
+                    ("music_flow", "node1"): cnd.regexp(
+                        r"talk about music"
+                    ),  # first check
+                    ("greeting_flow", "node1"): cnd.regexp(
+                        r"hi|hello", re.IGNORECASE
+                    ),  # second check
+                    trn.previous(): cnd.regexp(
+                        r"previous", re.IGNORECASE
+                    ),  # third check
                     # trn.previous() is equivalent to ("PREVIOUS_flow", "PREVIOUS_node")
                     trn.repeat(): always_true_condition,  # fourth check
                     # trn.repeat() is equivalent to ("global_flow", "fallback_node")
@@ -56,7 +70,11 @@ flows = {
             "node1": {
                 RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
                 TRANSITIONS: {
-                    ("global_flow", "fallback_node", 0.1): always_true_condition,  # second check
+                    (
+                        "global_flow",
+                        "fallback_node",
+                        0.1,
+                    ): always_true_condition,  # second check
                     "node2": cnd.regexp(r"how are you"),  # first check
                     # "node2" is equivalent to ("greeting_flow", "node2", 1.0)
                 },
@@ -68,8 +86,12 @@ flows = {
                     # trn.to_fallback(0.1) is equivalent to ("global_flow", "fallback_node", 0.1)
                     trn.forward(0.5): cnd.regexp(r"talk about"),  # second check
                     # trn.forward(0.5) is equivalent to ("greeting_flow", "node3", 0.5)
-                    ("music_flow", "node1"): cnd.regexp(r"talk about music"),  # first check
-                    trn.previous(): cnd.regexp(r"previous", re.IGNORECASE),  # third check
+                    ("music_flow", "node1"): cnd.regexp(
+                        r"talk about music"
+                    ),  # first check
+                    trn.previous(): cnd.regexp(
+                        r"previous", re.IGNORECASE
+                    ),  # third check
                     # ("music_flow", "node1") is equivalent to ("music_flow", "node1", 1.0)
                 },
             },
@@ -115,8 +137,12 @@ flows = {
             "node4": {
                 RESPONSE: "That's all what I know",
                 TRANSITIONS: {
-                    greeting_flow_n2_transition: cnd.regexp(r"next", re.IGNORECASE),  # second check
-                    high_priority_node_transition("greeting_flow", "node4"): cnd.regexp(r"next time", re.IGNORECASE),
+                    greeting_flow_n2_transition: cnd.regexp(
+                        r"next", re.IGNORECASE
+                    ),  # second check
+                    high_priority_node_transition("greeting_flow", "node4"): cnd.regexp(
+                        r"next time", re.IGNORECASE
+                    ),
                     trn.to_fallback(): always_true_condition,  # third check
                 },
             },
@@ -135,12 +161,30 @@ actor = Actor(
 testing_dialog = [
     ("hi", "Hi, how are you?"),
     ("i'm fine, how are you?", "Good. What do you want to talk about?"),
-    ("talk about music.", "I love `System of a Down` group, would you like to tell about it? "),
-    ("yes", "System of a Downis an Armenian-American heavy metal band formed in in 1994."),
-    ("next", "The band achieved commercial success with the release of five studio albums."),
-    ("back", "System of a Downis an Armenian-American heavy metal band formed in in 1994."),
-    ("repeat", "System of a Downis an Armenian-American heavy metal band formed in in 1994."),
-    ("next", "The band achieved commercial success with the release of five studio albums."),
+    (
+        "talk about music.",
+        "I love `System of a Down` group, would you like to tell about it? ",
+    ),
+    (
+        "yes",
+        "System of a Downis an Armenian-American heavy metal band formed in in 1994.",
+    ),
+    (
+        "next",
+        "The band achieved commercial success with the release of five studio albums.",
+    ),
+    (
+        "back",
+        "System of a Downis an Armenian-American heavy metal band formed in in 1994.",
+    ),
+    (
+        "repeat",
+        "System of a Downis an Armenian-American heavy metal band formed in in 1994.",
+    ),
+    (
+        "next",
+        "The band achieved commercial success with the release of five studio albums.",
+    ),
     ("next", "That's all what I know"),
     ("next", "Good. What do you want to talk about?"),
     ("previous", "That's all what I know"),
@@ -161,7 +205,9 @@ testing_dialog = [
 def run_test():
     ctx = {}
     for in_request, true_out_response in testing_dialog:
-        _, ctx = example_1_basics.turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
+        _, ctx = example_1_basics.turn_handler(
+            in_request, ctx, actor, true_out_response=true_out_response
+        )
 
 
 if __name__ == "__main__":
