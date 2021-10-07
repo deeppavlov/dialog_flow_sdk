@@ -1,4 +1,25 @@
 services:
+
+  speech-function-classifier:
+    build:
+      args:
+        SERVICE_PORT: 8108
+        SERVICE_NAME: speech_function_classifier # has to be the same with skill dir name
+      context: annotators/speech_function_classifier
+    command: uvicorn server:app --reload --host 0.0.0.0 --port 8108
+    ports:
+      - 8108:8108
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          memory: 2.5G
+        reservations:
+          memory: 2.5G
+
   speech-function-predictor:
     build:
       args:
