@@ -1,2 +1,2 @@
 # base
-git+https://github.com/deepmipt/dialog_flow_framework.git@0accf7675f1db54b9e2698b54e30ad90bffee760
+git+https://github.com/deepmipt/dialog_flow_framework.git@8cd4cdce010b45ce397070076330ab54787d978e

@@ -3,7 +3,7 @@ import re
 import random
 from typing import Any
 
-from dff.core.keywords import TRANSITIONS, GRAPH, RESPONSE
+from dff.core.keywords import TRANSITIONS, RESPONSE
 from dff.core import Actor, Context
 import dff.response as rsp
 import dff.conditions as cnd
@@ -29,9 +29,7 @@ logger = logging.getLogger(__name__)
 # - `choice` - will return `true` if the user's request completely matches the value passed to the function.
 
 
-def cannot_talk_about_topic_response(
-    ctx: Context, actor: Actor, *args, **kwargs
-) -> Any:
+def cannot_talk_about_topic_response(ctx: Context, actor: Actor, *args, **kwargs) -> Any:
     request = ctx.last_request
     topic_pattern = re.compile(r"(.*talk about )(.*)\.")
     topic = topic_pattern.findall(request)
@@ -44,9 +42,7 @@ def cannot_talk_about_topic_response(
 
 def upper_case_response(response: str):
     # wrapper for internal response function
-    def cannot_talk_about_topic_response(
-        ctx: Context, actor: Actor, *args, **kwargs
-    ) -> Any:
+    def cannot_talk_about_topic_response(ctx: Context, actor: Actor, *args, **kwargs) -> Any:
         return response.upper()
 
     return cannot_talk_about_topic_response
@@ -59,43 +55,38 @@ def fallback_trace_response(ctx: Context, actor: Actor, *args, **kwargs) -> Any:
     }
 
 
-flows = {
+plot = {
     "greeting_flow": {
-        GRAPH: {
-            "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
-                RESPONSE: "",
-                TRANSITIONS: {
-                    "node1": cnd.exact_match("Hi")
-                },  # If "Hi" == request of user then we make the transition
-            },
-            "node1": {
-                RESPONSE: rsp.choice(
-                    ["Hi, what is up?", "Hello, how are you?"]
-                ),  # random choice from candicate list
-                TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?")},
-            },
-            "node2": {
-                RESPONSE: "Good. What do you want to talk about?",
-                TRANSITIONS: {"node3": cnd.exact_match("Let's talk about music.")},
-            },
-            "node3": {
-                RESPONSE: cannot_talk_about_topic_response,
-                TRANSITIONS: {"node4": cnd.exact_match("Ok, goodbye.")},
-            },
-            "node4": {
-                RESPONSE: upper_case_response("bye"),
-                TRANSITIONS: {"node1": cnd.exact_match("Hi")},
-            },
-            "fallback_node": {  # We get to this node if an error occurred while the agent was running
-                RESPONSE: fallback_trace_response,
-                TRANSITIONS: {"node1": cnd.exact_match("Hi")},
-            },
-        }
+        "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
+            RESPONSE: "",
+            TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
+        },
+        "node1": {
+            RESPONSE: rsp.choice(["Hi, what is up?", "Hello, how are you?"]),  # random choice from candicate list
+            TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?")},
+        },
+        "node2": {
+            RESPONSE: "Good. What do you want to talk about?",
+            TRANSITIONS: {"node3": cnd.exact_match("Let's talk about music.")},
+        },
+        "node3": {
+            RESPONSE: cannot_talk_about_topic_response,
+            TRANSITIONS: {"node4": cnd.exact_match("Ok, goodbye.")},
+        },
+        "node4": {
+            RESPONSE: upper_case_response("bye"),
+            TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+        },
+        "fallback_node": {  # We get to this node if an error occurred while the agent was running
+            RESPONSE: fallback_trace_response,
+            TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+        },
     },
 }
 
+
 actor = Actor(
-    flows,
+    plot,
     start_node_label=("greeting_flow", "start_node"),
     fallback_node_label=("greeting_flow", "fallback_node"),
 )
@@ -104,41 +95,17 @@ actor = Actor(
 # testing
 testing_dialog = [
     ("Hi", "Hello, how are you?"),  # start_node -> node1
-    (
-        "i'm fine, how are you?",
-        "Good. What do you want to talk about?",
-    ),  # node1 -> node2
-    (
-        "Let's talk about music.",
-        "Sorry, I can not talk about music now.",
-    ),  # node2 -> node3
+    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
+    ("Let's talk about music.", "Sorry, I can not talk about music now."),  # node2 -> node3
     ("Ok, goodbye.", "BYE"),  # node3 -> node4
     ("Hi", "Hello, how are you?"),  # node4 -> node1
-    (
-        "stop",
-        {"previous_node": ("greeting_flow", "node1"), "last_request": "stop"},
-    ),  # node1 -> fallback_node
-    (
-        "one",
-        {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "one"},
-    ),  # f_n->f_n
-    (
-        "help",
-        {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "help"},
-    ),  # f_n->f_n
-    (
-        "nope",
-        {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "nope"},
-    ),  # f_n->f_n
+    ("stop", {"previous_node": ("greeting_flow", "node1"), "last_request": "stop"}),  # node1 -> fallback_node
+    ("one", {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "one"}),  # f_n->f_n
+    ("help", {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "help"}),  # f_n->f_n
+    ("nope", {"previous_node": ("greeting_flow", "fallback_node"), "last_request": "nope"}),  # f_n->f_n
     ("Hi", "Hi, what is up?"),  # fallback_node -> node1
-    (
-        "i'm fine, how are you?",
-        "Good. What do you want to talk about?",
-    ),  # node1 -> node2
-    (
-        "Let's talk about music.",
-        "Sorry, I can not talk about music now.",
-    ),  # node2 -> node3
+    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
+    ("Let's talk about music.", "Sorry, I can not talk about music now."),  # node2 -> node3
     ("Ok, goodbye.", "BYE"),  # node3 -> node4
 ]
 
@@ -149,9 +116,7 @@ random.seed(31415)  # predestination of choice
 def run_test():
     ctx = {}
     for in_request, true_out_response in testing_dialog:
-        _, ctx = example_1_basics.turn_handler(
-            in_request, ctx, actor, true_out_response=true_out_response
-        )
+        _, ctx = example_1_basics.turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
 
 
 if __name__ == "__main__":
