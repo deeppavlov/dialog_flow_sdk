@@ -10,3 +10,6 @@ def is_sf(sf_name="Open.Give.Opinion"):
         return sf_name in ctx.misc.get("speech_functions", [[]])[-1]
 
     return is_sf_handler
+
+
+speech_functions = is_sf
