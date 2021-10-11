@@ -4,6 +4,12 @@ from typing import Optional, Union
 from dff.core.keywords import TRANSITIONS, RESPONSE
 from dff.core import Context, Actor
 import dff.conditions as cnd
+import requests
+from nltk.tokenize import sent_tokenize
+
+import condition as loc_cnd
+
+URL = "http://0.0.0.0:8108/model"
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +34,8 @@ plot = {
     "greeting_flow": {
         "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
             RESPONSE: "",
-            TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
+            # TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
+            TRANSITIONS: {"node1": loc_cnd.is_sf()},
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
@@ -64,6 +71,18 @@ actor = Actor(
     fallback_node_label=("greeting_flow", "fallback_node"),
 )
 
+def get_sf(ctx: Context):
+    last_response = ctx.last_response
+    last_request = ctx.last_request
+    prev_speech_function = ctx.misc.get("speech_functions", [[None]])[-1][-1]
+    requested_data = {
+        "phrase": sent_tokenize(last_request),
+        "prev_phrase": last_response,
+        "prev_speech_function": prev_speech_function,
+    }
+    speech_functions = requests.post(URL, json=requested_data).json()
+    ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
+    return ctx
 
 # turn_handler - a function is made for the convenience of working with an actor
 def turn_handler(
@@ -74,8 +93,11 @@ def turn_handler(
 ):
     # Context.cast - gets an object type of [Context, str, dict] returns an object type of Context
     ctx = Context.cast(ctx)
+
     # Add in current context a next request of user
     ctx.add_request(in_request)
+    ctx = get_sf(ctx)
+
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
     # get last actor response from the context
@@ -84,7 +106,7 @@ def turn_handler(
     if true_out_response is not None and true_out_response != out_response:
         raise Exception(f"{in_request=} -> true_out_response != out_response: {true_out_response} != {out_response}")
     else:
-        logging.info(f"{in_request=} -> {out_response}")
+        logger.info(f"{in_request=} -> {out_response}")
     return out_response, ctx
 
 
@@ -108,6 +130,7 @@ def run_test():
     ctx = {}
     for in_request, true_out_response in testing_dialog:
         _, ctx = turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
+    logger.info(ctx)
 
 
 # interactive mode
@@ -125,3 +148,5 @@ if __name__ == "__main__":
     )
     run_test()
     run_interactive_mode(actor)
+
+# %%
