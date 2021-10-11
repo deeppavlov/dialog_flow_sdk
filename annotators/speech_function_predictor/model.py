@@ -17,15 +17,11 @@ def init_model():
             samples[sample["id"]]["text"] = sample["value"]["text"]
             samples[sample["id"]]["start"] = int(sample["value"]["start"])
             if "paragraphlabels" in sample["value"]:
-                samples[sample["id"]]["paragraphlabels"] = sample["value"][
-                    "paragraphlabels"
-                ][0]
+                samples[sample["id"]]["paragraphlabels"] = sample["value"]["paragraphlabels"][0]
             if "choices" in sample["value"]:
                 samples[sample["id"]]["choices"] = sample["value"]["choices"][0]
 
-        sorted_samples = sorted(
-            [(samples[sample_id]["start"], sample_id) for sample_id in samples]
-        )
+        sorted_samples = sorted([(samples[sample_id]["start"], sample_id) for sample_id in samples])
         texts = []
         labels = []
         speakers = []
@@ -35,7 +31,8 @@ def init_model():
                 speakers.append(samples[sample_id]["speaker"])
                 paragraph_labels = samples[sample_id].get("paragraphlabels", "")
                 choices = samples[sample_id].get("choices", "")
-                labels.append(paragraph_labels + "." + choices)
+                new_label = (paragraph_labels + "." + choices).strip(".")
+                labels.append(new_label)
         dialogues.append((texts, labels, speakers))
 
     train_labels = dialogues[1][1]
@@ -49,6 +46,7 @@ def init_model():
         i = i + 1
         label_to_name.append(el)
 
+    print("Class Dict:", class_dict)
     counters = [[0] * len(class_dict) for _ in range(len(class_dict))]
 
     for label_sequence in (train_labels, test_labels):
