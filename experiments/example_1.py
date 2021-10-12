@@ -4,7 +4,7 @@ from typing import Optional, Union
 from dff.core.keywords import TRANSITIONS, RESPONSE, PROCESSING, GLOBAL, MISC
 from dff.core import Context, Actor
 import dff.conditions as cnd
-import condition as custom_functions
+import condition as dm_cnd
 
 import requests
 from nltk.tokenize import sent_tokenize
@@ -40,27 +40,27 @@ flows = {
     },
 	"greeting_flow": {
 		"start_node": {
-                TRANSITIONS: {'response_to_give_opinion': cnd.all([custom_functions.speech_functions("Open.Give.Opinion")]), 'reply_to_fact': cnd.all([custom_functions.speech_functions("Open.Demand.Fact")])},
+                TRANSITIONS: {'response_with_demand_fact': cnd.all([dm_cnd.is_sf("Open.Demand.Fact")])},
                 PROCESSING: {},
                 RESPONSE: "Hi %username%!",
                 MISC: {"speech_functions": ["Open.Attend"]}
                 },
-		"response_to_give_opinion": {
-                TRANSITIONS: {},
-                PROCESSING: {},
-                RESPONSE: "Responding to Give Opinion!",
-                MISC: {"speech_functions": ["Open.Demand.Fact"]}
-                },
-		"reply_to_fact": {
-                TRANSITIONS: {},
-                PROCESSING: {},
-                RESPONSE: "Responding to fact!",
-                MISC: {"speech_functions": ["Sustain.Continue.Prolong.Elaborate"]}
-                },
 		"fallback_node": {
-                TRANSITIONS: {'start_node': cnd.exact_match("Hi")},
+                TRANSITIONS: {},
                 PROCESSING: {},
                 RESPONSE: "Ooops"
+                },
+		"response_with_demand_fact": {
+                TRANSITIONS: {'suggestion': cnd.all([dm_cnd.is_sf("React.Respond.Support.Register")])},
+                PROCESSING: {},
+                RESPONSE: "I'm fine",
+                MISC: {"speech_functions": ["React.Respond.Support.Reply.Answer"]}
+                },
+		"suggestion": {
+                TRANSITIONS: {},
+                PROCESSING: {},
+                RESPONSE: "",
+                MISC: {"speech_functions": ["React.Respond.Support.Develop.Extend"]}
                 }
 		},
 	

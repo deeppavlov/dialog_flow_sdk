@@ -7,7 +7,7 @@ import dff.conditions as cnd
 import requests
 from nltk.tokenize import sent_tokenize
 
-import condition as custom_functions
+import condition as dm_cnd
 
 URL = "http://0.0.0.0:8108/model"
 
@@ -35,7 +35,7 @@ plot = {
         "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
             RESPONSE: "",
             # TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
-            TRANSITIONS: {"node1": custom_functions.speech_functions("Open.Give.Opinion")},
+            TRANSITIONS: {"node1": dm_cnd.is_sf("Open.Give.Opinion")},
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
