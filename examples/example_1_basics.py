@@ -9,7 +9,8 @@ from nltk.tokenize import sent_tokenize
 
 import condition as dm_cnd
 
-URL = "http://0.0.0.0:8108/model"
+SF_URL = "http://0.0.0.0:8108/model"
+MIDAS_URL = "http://0.0.0.0:8090/model"
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ plot = {
         "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
             RESPONSE: "",
             # TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
-            TRANSITIONS: {"node1": dm_cnd.is_sf("Open.Give.Opinion")},
+            TRANSITIONS: {"node1": cnd.all([dm_cnd.is_sf("Open.Give.Opinion"), dm_cnd.is_midas("pos_answer")])},
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
@@ -71,6 +72,7 @@ actor = Actor(
     fallback_node_label=("greeting_flow", "fallback_node"),
 )
 
+
 def get_sf(ctx: Context):
     last_response = ctx.last_response
     last_request = ctx.last_request
@@ -80,9 +82,20 @@ def get_sf(ctx: Context):
         "prev_phrase": last_response,
         "prev_speech_function": prev_speech_function,
     }
-    speech_functions = requests.post(URL, json=requested_data).json()
+    speech_functions = requests.post(SF_URL, json=requested_data).json()
     ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
     return ctx
+
+
+def get_midas(ctx: Context):
+    last_response = ctx.last_response if ctx.last_response else "hi"
+    requested_data = {
+        "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
+    }
+    midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
+    ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
+    return ctx
+
 
 # turn_handler - a function is made for the convenience of working with an actor
 def turn_handler(
@@ -97,6 +110,7 @@ def turn_handler(
     # Add in current context a next request of user
     ctx.add_request(in_request)
     ctx = get_sf(ctx)
+    ctx = get_midas(ctx)
 
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)

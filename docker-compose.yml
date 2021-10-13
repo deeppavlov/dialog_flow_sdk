@@ -37,4 +37,23 @@ services:
           memory: 768M
         reservations:
           memory: 768M
+
+  midas-classification:
+    build:
+      args:
+        CONFIG: midas_conv_bert.json
+      context: ./annotators/midas_classification
+    command: flask run -h 0.0.0.0 -p 8090
+    ports:
+      - 8090:8090
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - FLASK_APP=server
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 3G
+
 version: '3.7'
