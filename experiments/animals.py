@@ -11,6 +11,7 @@ from nltk.tokenize import sent_tokenize
 
 
 URL = "http://0.0.0.0:8108/model"
+MIDAS_URL = "http://0.0.0.0:8090/model"
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ flows = {
     },
 	"greeting_flow": {
 		"start_node": {
-                TRANSITIONS: {'response_with_demand_fact': cnd.all([dm_cnd.is_sf("Open.Demand.Fact")])},
+                TRANSITIONS: {'greet_and_ask_about_pets': cnd.all([dm_cnd.is_sf("Open.Demand.Fact")])},
                 PROCESSING: {},
                 RESPONSE: "Hi %username%!",
                 MISC: {"speech_functions": ["Open.Attend"]}
@@ -50,11 +51,29 @@ flows = {
                 PROCESSING: {},
                 RESPONSE: "Ooops"
                 },
-		"response_with_demand_fact": {
+		"greet_and_ask_about_pets": {
+                TRANSITIONS: {'cool_and_clarify_which_pets': cnd.any(                    [                        cnd.any(                            [                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm")                            ]                        ),                         cnd.all(                            [                                dm_cnd.is_sf("React.Rejoinder"),                                 dm_cnd.is_midas("pos_answer")                            ]                        )                    ]), 'sad_and_say_about_pets': cnd.any(                        [                            dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),                            cnd.all(                            [                                dm_cnd.is_sf("React.Rejoinder"),                                 dm_cnd.is_midas("neg_answer")                            ]                        )                    ])},
+                PROCESSING: {},
+                RESPONSE: "I'm fine. Jack, a friend of mine told me about their new cat, Lucy. She's so cuddlesome! Do you like pets?",
+                MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]}
+                },
+		"cool_and_clarify_which_pets": {
+                TRANSITIONS: {'tell_me_more_about_fav_pets': cnd.all([dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve")])},
+                PROCESSING: {},
+                RESPONSE: "Oh, cool! What animals do you like the most?",
+                MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]}
+                },
+		"sad_and_say_about_pets": {
                 TRANSITIONS: {},
                 PROCESSING: {},
-                RESPONSE: "I'm fine",
-                MISC: {"speech_functions": ["React.Respond.Support.Reply.Agree"]}
+                RESPONSE: "Oh, that's sad! Why is it so?",
+                MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]}
+                },
+		"tell_me_more_about_fav_pets": {
+                TRANSITIONS: {},
+                PROCESSING: {},
+                RESPONSE: "That's rather lovely! I like them, too!",
+                MISC: {"speech_functions": ["React.Respond.Support.Reply.Affirm"]}
                 }
 		},
 	
@@ -86,6 +105,16 @@ def get_sf(ctx: Context):
     return ctx
 
 
+def get_midas(ctx: Context):
+    last_response = ctx.last_response if ctx.last_response else "hi"
+    requested_data = {
+        "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
+    }
+    midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
+    ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
+    return ctx
+
+
 # turn_handler - a function is made for the convenience of working with an actor
 def turn_handler(
     in_request: str,
@@ -101,6 +130,7 @@ def turn_handler(
     # Add in current context a next request of user
     ctx.add_request(in_request)
     ctx = get_sf(ctx)
+    ctx = get_midas(ctx)
     logger.info(f"{ctx=}")
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
