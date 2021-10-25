@@ -57,7 +57,7 @@ GENERIC_REACTION_TO_USER_SPEECH_FUNCTION = {
 
 def get_speech_function(ctx):
     human_utterance = list(ctx.requests.values())[-1]
-    sfs = ctx.misc["speech_functions"][-1]
+    sfs = ctx.misc.get("speech_functions", [""])[-1]
     phrases = nltk.sent_tokenize(human_utterance)
 
     sfunctions = {}

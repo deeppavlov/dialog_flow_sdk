@@ -75,11 +75,19 @@ def is_supported_speech_function(ctx, human_utterance, bot_utterance):
 
 
 def get_pre_last_human_utterance(ctx):
-    return list(ctx.requests.values())[-2]
+    utterances = list(ctx.requests.values())
+    if len(utterances) > 1:
+        return utterances[-2]
+    else:
+        return ""
 
 
 def get_pre_last_bot_utterance(ctx):
-    return list(ctx.responses.values())[-2]
+    utterances = list(ctx.responses.values())
+    if len(utterances) > 1:
+        return utterances[-2]
+    else:
+        return ""
 
 
 def is_last_bot_utterance_by_us(ctx):
@@ -87,11 +95,10 @@ def is_last_bot_utterance_by_us(ctx):
     if len(bot_utterances) == 0:
         return False
 
-    last_bot_utterance = ctx.last_response
-
-    active_skill = last_bot_utterance["active_skill"]
-
-    if active_skill == "dff_generic_responses_skill":
+    node_labels = ctx.node_labels
+    utt_nums = list(node_labels.keys())
+    utt_nums = sorted(utt_nums)
+    if node_labels[utt_nums[-1]] in [("generic_response", "generic_response_flow"), ("start_node", "generic_response_flow")]:
         return True
 
     return False
@@ -175,6 +182,8 @@ def generate_response(ctx, predicted_sf, previous_phrase, enable_repeats_registe
 
 def generic_response_condition(ctx: Context, actor: Actor, *args, **kwargs):
     flag = False
+    human_utterance = ctx.last_request
+    bot_utterance = ctx.last_response
     try:
         flag = is_supported_speech_function(ctx, human_utterance, bot_utterance)
 
@@ -183,7 +192,7 @@ def generic_response_condition(ctx: Context, actor: Actor, *args, **kwargs):
         logger.info(f"sys_response_to_speech_function_request: Exception: {exc}")
         sentry_sdk.capture_exception(exc)
 
-    logger.info(f"sys_response_to_speech_function_request: {flag}")
+    logger.info(f"generic_response_condition: {flag}")
     return flag
 
 
@@ -198,7 +207,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         sf_functions = None
         cont = False
 
-        if is_last_bot_utterance_by_us(ctx) or len(word_tokenize(human_utterance["text"])) > 10:
+        if is_last_bot_utterance_by_us(ctx) or len(word_tokenize(human_utterance)) > 10:
             # check for "?" symbol in the standalone segments of the original user's utterance
             for phrase in phrases:
                 if "?" not in phrase:
@@ -209,11 +218,12 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
                 sf_functions = sf_utils.get_speech_function_for_human_utterance(ctx)
                 logger.info(f"Found Speech Function: {sf_functions}")
             else:
-                if word_tokenize(human_utterance["text"])[0] not in interrogative_words:
+                if word_tokenize(human_utterance)[0] not in interrogative_words:
                     sf_functions = sf_utils.get_speech_function_for_human_utterance(ctx)
                     logger.info(f"Found Speech Function: {sf_functions}")
 
         if not sf_functions:
+            logger.info(f"generic_response_generate, no response")
             return ""
 
         last_phrase_function = list(sf_functions)[-1]
@@ -222,6 +232,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         logger.info(f"Proposed Speech Functions: {sf_predictions}")
 
         if not sf_predictions:
+            logger.info(f"generic_response_generate, no response")
             return ""
 
         generic_responses = []
@@ -245,12 +256,13 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         # actual generic response
         if generic_responses:
             response = random.choice(generic_responses)
+        logger.info(f"generic_response_generate {response}")
         
         return response
     
     except Exception as exc:
         logger.exception(exc)
-        logger.info(f"usr_response_to_speech_function_response: Exception: {exc}")
+        logger.info(f"generic_response_generate: Exception: {exc}")
         sentry_sdk.capture_exception(exc)
         return ""
 
