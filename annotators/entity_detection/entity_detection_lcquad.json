@@ -116,7 +116,7 @@
       },
       {
         "url": "http://files.deeppavlov.ai/kbqa/models/ner_lcquad_detect_entities.tar.gz",
-        "subdir": "{MODELS_PATH}/ner_lcquad_ent_and_type"
+        "subdir": "{MODELS_PATH}/ner_lcquad_detect_entities"
       }
     ]
   }
