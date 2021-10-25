@@ -1,6 +1,10 @@
 import re
 
 
+def join_sentences_in_or_pattern(sents):
+    return r"(" + r"|".join(sents) + r")"
+
+
 def get_intents(annotated_utterance, probs=False, default_probs=None, default_labels=None, which="all"):
     """Function to get intents from particular annotator or all detected.
 

@@ -13,9 +13,10 @@ import nltk
 from nltk import wordpunct_tokenize
 from nltk import word_tokenize
 import dff.transitions as trn
+from dff.core.keywords import TRANSITIONS, RESPONSE
+from dff.core import Context, Actor
 
 import sf_utils
-from common.psychometrics import is_introvert
 
 sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"))
 
