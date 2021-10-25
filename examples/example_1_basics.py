@@ -10,7 +10,9 @@ from nltk.tokenize import sent_tokenize
 import condition as dm_cnd
 
 SF_URL = "http://0.0.0.0:8108/model"
+SFP_URL = "http://0.0.0.0:8107/model"
 MIDAS_URL = "http://0.0.0.0:8090/model"
+ENTITY_DETECTION_URL = "http://0.0.0.0:8103/respond"
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +89,14 @@ def get_sf(ctx: Context):
     return ctx
 
 
+def get_sfp(ctx: Context):
+    last_sf = ctx.misc["speech_functions"][-1][-1]
+    requested_data = [last_sf]
+    sf_predictions = requests.post(SFP_URL, json=requested_data).json()
+    ctx.misc["sf_predictions"] = ctx.misc.get("sf_predictions", []) + sf_predictions[-1][0]["prediction"]
+    return ctx
+
+
 def get_midas(ctx: Context):
     last_response = ctx.last_response if ctx.last_response else "hi"
     requested_data = {
@@ -94,6 +104,16 @@ def get_midas(ctx: Context):
     }
     midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
     ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
+    return ctx
+
+
+def get_entities(ctx: Context):
+    last_request = ctx.last_request if ctx.last_request else ""
+    requested_data = {
+        "last_utterances": [[last_request]]
+    }
+    entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()[0]
+    ctx.misc["entities"] = ctx.misc.get("entities", []) + entities
     return ctx
 
 
@@ -111,6 +131,7 @@ def turn_handler(
     ctx.add_request(in_request)
     ctx = get_sf(ctx)
     ctx = get_midas(ctx)
+    ctx = get_entities(ctx)
 
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
