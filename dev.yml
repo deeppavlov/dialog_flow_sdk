@@ -1,0 +1,7 @@
+services:
+  entity-detection:
+    volumes:
+      - "./annotators/entity_detection:/src"
+      - "~/.deeppavlov:/root/.deeppavlov"
+    ports:
+      - 8103:8103

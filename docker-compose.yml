@@ -57,7 +57,6 @@ services:
           memory: 3G
 
   entity-detection:
-    env_file: [.env]
     build:
       args:
         CONFIG: dialog_entity_detection.json
