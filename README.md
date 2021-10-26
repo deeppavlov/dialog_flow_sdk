@@ -33,3 +33,7 @@ Follow these instructions to run the Discourse Moves Recommendation System:
 docker-compose up -d --build
 ```
 After that sf predictor is availible on `localhost:8107/annotation` and sf classifier is availible on `localhost:8108/annotation` 
+## Generic Responses
+TBD
+## Entity Detection
+TBD
