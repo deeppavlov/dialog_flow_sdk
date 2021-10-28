@@ -4,10 +4,13 @@ from typing import Optional, Union
 from dff.core.keywords import TRANSITIONS, RESPONSE
 from dff.core import Context, Actor
 import dff.conditions as cnd
+import dff.transitions as trn
 import requests
 from nltk.tokenize import sent_tokenize
 
 import condition as dm_cnd
+from entity_detection import has_entities, entity_extraction, slot_filling
+from generic_responses import generic_response_condition, generic_response_generate
 
 SF_URL = "http://0.0.0.0:8108/model"
 SFP_URL = "http://0.0.0.0:8107/model"
@@ -61,6 +64,53 @@ plot = {
             TRANSITIONS: {"node1": cnd.exact_match("Hi")},
         },
     },
+}
+
+plot_extended = {
+    "greeting_flow": {
+        "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
+            RESPONSE: "",
+            # TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
+            TRANSITIONS: {"node1": cnd.all([dm_cnd.is_sf("Open.Give.Opinion"), dm_cnd.is_midas("pos_answer")])},
+        },
+        "node1": {
+            RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
+            TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?")},
+        },
+        "node2": {
+            RESPONSE: "Good. What do you want to talk about?",
+            TRANSITIONS: {"node3": cnd.exact_match("Let's talk about music."),
+                          ("generic_responses_flow", "generic_response"): generic_response_condition},
+        },
+        "node3": {
+            PROCESSING: {1: entity_extraction("singer", "PERSON")},
+            RESPONSE: "What is your favourite singer?",
+            TRANSITIONS: {"node4": has_entities("PERSON")},
+        },
+        "node4": {
+            PROCESSING: {1: slot_filling},
+            RESPONSE: "I also like [singer] songs.",
+            TRANSITIONS: {"node5": cnd.exact_match("Ok, goodbye.")},
+        },
+        "node5": {
+            RESPONSE: "bye",
+            TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+        },
+        "fallback_node": {  # We get to this node if an error occurred while the agent was running
+            RESPONSE: "Ooops",
+            TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+        },
+    },
+    "generic_responses_flow": {
+        "start_node": {
+            RESPONSE: "",
+            TRANSITIONS: {"generic_response": generic_response_condition},
+        },
+        "generic_response": {
+            RESPONSE: generic_response_generate,
+            TRANSITIONS: {trn.repeat(): generic_response_condition},
+        }
+    }
 }
 
 # An actor is an object that processes user input replicas and returns responses
