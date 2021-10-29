@@ -2,7 +2,7 @@ import logging
 import os
 from typing import Optional, Union
 
-from dff.core.keywords import TRANSITIONS, RESPONSE
+from dff.core.keywords import TRANSITIONS, RESPONSE, PROCESSING
 from dff.core import Context, Actor
 import dff.conditions as cnd
 import dff.transitions as trn
@@ -13,12 +13,12 @@ import condition as dm_cnd
 from entity_detection import has_entities, entity_extraction, slot_filling
 from generic_responses import generic_response_condition, generic_response_generate
 
-SF_URL = os.getenv("SF_URL")
-SFP_URL = os.getenv("SFP_URL")
-MIDAS_URL = os.getenv("MIDAS_URL")
-ENTITY_DETECTION_URL = os.getenv("ENTITY_DETECTION_URL")
-ENTITY_LINKING_URL = os.getenv("ENTITY_LINKING_URL")
-WIKI_PARSER_URL = os.getenv("WIKI_PARSER_URL")
+SF_URL = os.getenv("SF_URL", "http://0.0.0.0:8108/model")
+SFP_URL = os.getenv("SFP_URL", "http://0.0.0.0:8107/model")
+MIDAS_URL = os.getenv("MIDAS_URL", "http://0.0.0.0:8090/model")
+ENTITY_DETECTION_URL = os.getenv("ENTITY_DETECTION_URL", "http://0.0.0.0:8103/respond")
+ENTITY_LINKING_URL = os.getenv("ENTITY_LINKING_URL", "http://0.0.0.0:8075/model")
+WIKI_PARSER_URL = os.getenv("WIKI_PARSER_URL", "http://0.0.0.0:8077/model")
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +165,7 @@ def get_entities(ctx: Context):
     requested_data = {
         "last_utterances": [[last_request]]
     }
-    entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()[0]
+    entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
     ctx.misc["entity_detection"] = ctx.misc.get("entity_detection", []) + entities
     return ctx
 
@@ -203,8 +203,11 @@ def turn_handler(
     # Add in current context a next request of user
     ctx.add_request(in_request)
     ctx = get_sf(ctx)
+    ctx = get_sfp(ctx)
     ctx = get_midas(ctx)
     ctx = get_entities(ctx)
+    ctx = get_entity_ids(ctx)
+    ctx = get_wiki_parser_triplets(ctx)
 
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
