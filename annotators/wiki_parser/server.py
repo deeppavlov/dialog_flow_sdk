@@ -5,7 +5,6 @@ from flask import Flask, request, jsonify
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from wiki_parser import execute_queries_list
-from common.utils import remove_punctuation_from_dict_keys
 
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -26,7 +25,6 @@ def respond():
     logger.debug("Calling wp")
     try:
         res = execute_queries_list(parser_info, query, utt_num)
-        res = remove_punctuation_from_dict_keys(res)
     except Exception as e:
         sentry_sdk.capture_exception(e)
         logger.exception(e)

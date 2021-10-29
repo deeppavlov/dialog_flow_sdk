@@ -28,6 +28,5 @@ RUN wget -q -P /root/.deeppavlov/downloads/wikidata ${WIKI_CACHE_DB}
 
 COPY $SRC_DIR /src
 WORKDIR /src
-COPY ./common/ ./common/
 
 CMD gunicorn  --workers=1 --timeout 500 --graceful-timeout 500 server:app -b 0.0.0.0:8077
