@@ -1,15 +1,11 @@
-# %%
 import logging
 import os
 import re
 
 import nltk
-import sentry_sdk
 import statistics
 
 import utils as common_utils
-
-sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"))
 
 
 logger = logging.getLogger(__name__)
