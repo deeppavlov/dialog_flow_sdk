@@ -86,12 +86,12 @@ plot_extended = {
                           ("generic_responses_flow", "generic_response"): generic_response_condition},
         },
         "node3": {
-            PROCESSING: {1: entity_extraction("singer", "PERSON")},
             RESPONSE: "What is your favourite singer?",
-            TRANSITIONS: {"node4": has_entities("PERSON")},
+            TRANSITIONS: {"node4": has_entities(["tags:person", "tags:videoname", "wiki:Q177220"])},
         },
         "node4": {
-            PROCESSING: {1: slot_filling},
+            PROCESSING: {1: entity_extraction(singer=["tags:person", "tags:videoname", "wiki:Q177220"]),
+                         2: slot_filling},
             RESPONSE: "I also like [singer] songs.",
             TRANSITIONS: {"node5": cnd.exact_match("Ok, goodbye.")},
         },
@@ -122,7 +122,7 @@ plot_extended = {
 # and the node to which the actor will go in case of an error `fallback_node_label`
 # If `fallback_node_label` is not set, then its value becomes equal to `start_node_label` by default
 actor = Actor(
-    plot,
+    plot_extended,
     start_node_label=("greeting_flow", "start_node"),
     fallback_node_label=("greeting_flow", "fallback_node"),
 )
@@ -138,6 +138,7 @@ def get_sf(ctx: Context):
         "prev_speech_function": prev_speech_function,
     }
     speech_functions = requests.post(SF_URL, json=requested_data).json()
+    logger.info(f"current speech function {speech_functions}")
     ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
     return ctx
 
@@ -156,25 +157,29 @@ def get_midas(ctx: Context):
         "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
     }
     midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
+    logger.info(f"midas {midas}")
     ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
     return ctx
 
 
 def get_entities(ctx: Context):
     last_request = ctx.last_request if ctx.last_request else ""
-    requested_data = {
-        "last_utterances": [[last_request]]
-    }
+    bot_utterances = list(ctx.responses.values())
+    requested_data = {"last_utterances": [[last_request]]}
+    if len(bot_utterances) > 0:
+        requested_data["prev_utterances"] = [[bot_utterances[-1]]]
     entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
+    logger.info(f"entity detection {entities}")
     ctx.misc["entity_detection"] = ctx.misc.get("entity_detection", []) + entities
     return ctx
 
 
 def get_entity_ids(ctx: Context):
     last_request = ctx.last_request if ctx.last_request else ""
-    entities = ctx.misc.get("entities", [{}])[-1].get("entities", [])
+    entities = ctx.misc.get("entity_detection", [{}])[-1].get("entities", [])
     requested_data = {"entity_substr": [entities], "template": [""], "context": [[last_request]]}
-    el_output = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
+    el_output = requests.post(ENTITY_LINKING_URL, json=requested_data).json()
+    logger.info(f"entity_linking {el_output}")
     ctx.misc["entity_linking"] = ctx.misc.get("entity_linking", []) + el_output
     return ctx
 
