@@ -17,14 +17,11 @@ import itertools
 import json
 import os
 import re
-import multiprocessing as mp
 import logging
 from typing import List, Tuple, Dict, Any
 import sentry_sdk
 
 from hdt import HDTDocument
-
-from common.wiki_skill import used_types as wiki_skill_used_types
 
 sentry_sdk.init(os.getenv("SENTRY_DSN"))
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.DEBUG)
@@ -43,8 +40,6 @@ lang = "@en"
 wiki_filename = "/root/.deeppavlov/downloads/wikidata/wikidata_lite.hdt"
 document = HDTDocument(wiki_filename)
 USE_CACHE = True
-
-ANIMALS_SKILL_TYPES = {"Q55983715", "Q16521", "Q43577", "Q39367", "Q38547"}
 
 occ = {
     "business": [["Q131524", "enterpreneur"]],
@@ -657,10 +652,9 @@ else:
     top_people = find_top_people()
     genres_dict, people_genres_dict = extract_info()
 
-manager = mp.Manager()
 
-
-def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], utt_num: int, wiki_parser_output):
+def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], utt_num: int):
+    wiki_parser_output = []
     for parser_info, query in zip(parser_info_list, queries_list):
         if parser_info == "find_rels":
             rels = []
@@ -674,8 +668,6 @@ def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], u
         elif parser_info == "find_top_triplets":
             triplets_info = {}
             topic_skills_triplets_info = {}
-            wiki_skill_triplets_info = {}
-            animals_skill_triplets_info = {}
             try:
                 for entity_info in query:
                     if entity_info:
@@ -689,7 +681,6 @@ def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], u
                             )
                             triplets_info = {**triplets_info, **entity_triplets_info}
                         found_topic_skills_info = False
-                        found_wiki_skill_info = False
                         for n, (entity, token_conf, conf) in enumerate(
                             zip(entity_ids, tokens_match_conf_list, confidences)
                         ):
@@ -703,26 +694,8 @@ def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], u
                                 topic_skills_triplets_info = {**topic_skills_triplets_info, **entity_triplets_info}
                                 if not set(types_2hop).intersection({"Q11424", "Q24856"}):
                                     found_topic_skills_info = True
-                            if not found_wiki_skill_info and (
-                                set(types).intersection(wiki_skill_used_types)
-                                or set(types_2hop).intersection(wiki_skill_used_types)
-                            ):
-                                entity_triplets_info = find_top_triplets(entity, entity_substr, n, token_conf, conf)
-                                wiki_skill_triplets_info = {**wiki_skill_triplets_info, **entity_triplets_info}
-                                if not set(types_2hop).intersection({"Q11424", "Q24856"}):
-                                    found_wiki_skill_info = True
-                            if found_topic_skills_info and found_wiki_skill_info:
+                            if found_topic_skills_info:
                                 break
-                        for n, (entity, token_conf, conf) in enumerate(
-                            zip(entity_ids, tokens_match_conf_list, confidences)
-                        ):
-                            types = find_types(entity)
-                            types_2hop = find_types_2hop(entity)
-                            if set(types).intersection(ANIMALS_SKILL_TYPES) or set(types_2hop).intersection(
-                                ANIMALS_SKILL_TYPES
-                            ):
-                                entity_triplets_info = find_top_triplets(entity, entity_substr, n, token_conf, conf)
-                                animals_skill_triplets_info = {**animals_skill_triplets_info, **entity_triplets_info}
             except Exception as e:
                 log.info("Wrong arguments are passed to wiki_parser")
                 sentry_sdk.capture_exception(e)
@@ -731,8 +704,6 @@ def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], u
                 {
                     "entities_info": triplets_info,
                     "topic_skill_entities_info": topic_skills_triplets_info,
-                    "wiki_skill_entities_info": wiki_skill_triplets_info,
-                    "animals_skill_entities_info": animals_skill_triplets_info,
                     "utt_num": utt_num,
                 }
             )
@@ -835,11 +806,4 @@ def execute_queries_list(parser_info_list: List[str], queries_list: List[Any], u
             wiki_parser_output.append(list(triplets))
         else:
             raise ValueError(f"Unsupported query type {parser_info}")
-
-
-def wp_call(parser_info_list: List[str], queries_list: List[Any], utt_num: int) -> List[Any]:
-    wiki_parser_output = manager.list()
-    p = mp.Process(target=execute_queries_list, args=(parser_info_list, queries_list, utt_num, wiki_parser_output))
-    p.start()
-    p.join()
-    return list(wiki_parser_output)
+    return wiki_parser_output
