@@ -173,7 +173,7 @@ def get_entities(ctx: Context):
 def get_entity_ids(ctx: Context):
     last_request = ctx.last_request if ctx.last_request else ""
     entities = ctx.misc.get("entities", [{}])[-1].get("entities", [])
-    request_data = {"entity_substr": [entities], "template": [""], "context": [[last_request]]}
+    requested_data = {"entity_substr": [entities], "template": [""], "context": [[last_request]]}
     el_output = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
     ctx.misc["entity_linking"] = ctx.misc.get("entity_linking", []) + el_output
     return ctx
@@ -184,7 +184,7 @@ def get_wiki_parser_triplets(ctx: Context):
     utterances = list(ctx.requests.values())
     parser_info = ["find_top_triplets"]
     if el_output:
-        request_data = {"parser_info": parser_info, "query": [el_output], "utt_num": len(utterances)}
+        requested_data = {"parser_info": parser_info, "query": [el_output], "utt_num": len(utterances)}
         wp_output = requests.post(WIKI_PARSER_URL, json=requested_data).json()
         ctx.misc["wiki_parser"] = ctx.misc.get("wiki_parser", []) + wp_output
     return ctx
