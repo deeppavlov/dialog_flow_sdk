@@ -1,10 +1,52 @@
+import logging
 import re
 from dff.core import Context, Actor, Node
+
+logger = logging.getLogger(__name__)
+
+
+def find_entity_by_types(wp_output, types_to_find, relations=None):
+    found_entity_wp = ""
+    found_types = []
+    found_entity_triplets = {}
+    types_to_find = set(types_to_find)
+    if isinstance(wp_output, dict):
+        all_entities_info = wp_output.get("entities_info", {})
+        topic_skill_entities_info = wp_output.get("topic_skill_entities_info", {})
+        for entities_info in [all_entities_info, wiki_skill_entities_info, topic_skill_entities_info]:
+            for entity, triplets in entities_info.items():
+                types = (
+                    triplets.get("types", [])
+                    + triplets.get("instance of", [])
+                    + triplets.get("subclass of", [])
+                    + triplets.get("types_2_hop", [])
+                    + triplets.get("occupation", [])
+                )
+                type_ids = [elem for elem, label in types]
+                logger.info(f"types_to_find {types_to_find} type_ids {type_ids}")
+                inters = set(type_ids).intersection(types_to_find)
+                conf = triplets["conf"]
+                pos = triplets.get("pos", 5)
+                if inters and conf > 0.6 and pos < 2:
+                    found_entity_wp = entity
+                    found_types = list(inters)
+                    entity_triplets = {}
+                    if relations:
+                        for relation in relations:
+                            objects_info = triplets.get(relation, [])
+                            if objects_info:
+                                objects = [obj[1] for obj in objects_info]
+                                entity_triplets[relation] = objects
+                    if entity_triplets:
+                        found_entity_triplets[entity] = entity_triplets
+                    break
+    return found_entity_wp, found_types, found_entity_triplets
 
 
 def extract_entity(ctx, entity_type):
     user_text = ctx.last_request
-    entities = ctx.misc.get("entities", [{}])[-1]
+    entities = ctx.misc.get("entity_detection", [{}])[-1]
+    wp_output = ctx.misc.get("wiki_parser", [{}])[-1]
     if entity_type.startswith("tags"):
         tag = entity_type.split("tags:")[1]
         nounphrases = entities.get("labelled_entities", [])
@@ -14,6 +56,11 @@ def extract_entity(ctx, entity_type):
             if nounphr_label == tag:
                 found_entity = nounphr_text
                 return found_entity
+    elif entity_type.startswith("wiki"):
+        wp_type = entity_type.split("wiki:")[1]
+        found_entity, *_ = find_entity_by_types(wp_output, [wp_type])
+        if found_entity:
+            return found_entity
     elif entity_type == "any_entity":
         if entities:
             return entities[0]
