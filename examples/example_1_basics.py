@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Optional, Union
 
 from dff.core.keywords import TRANSITIONS, RESPONSE
@@ -12,10 +13,12 @@ import condition as dm_cnd
 from entity_detection import has_entities, entity_extraction, slot_filling
 from generic_responses import generic_response_condition, generic_response_generate
 
-SF_URL = "http://0.0.0.0:8108/model"
-SFP_URL = "http://0.0.0.0:8107/model"
-MIDAS_URL = "http://0.0.0.0:8090/model"
-ENTITY_DETECTION_URL = "http://0.0.0.0:8103/respond"
+SF_URL = os.getenv("SF_URL")
+SFP_URL = os.getenv("SFP_URL")
+MIDAS_URL = os.getenv("MIDAS_URL")
+ENTITY_DETECTION_URL = os.getenv("ENTITY_DETECTION_URL")
+ENTITY_LINKING_URL = os.getenv("ENTITY_LINKING_URL")
+WIKI_PARSER_URL = os.getenv("WIKI_PARSER_URL")
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +166,27 @@ def get_entities(ctx: Context):
         "last_utterances": [[last_request]]
     }
     entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()[0]
-    ctx.misc["entities"] = ctx.misc.get("entities", []) + entities
+    ctx.misc["entity_detection"] = ctx.misc.get("entity_detection", []) + entities
+    return ctx
+
+
+def get_entity_ids(ctx: Context):
+    last_request = ctx.last_request if ctx.last_request else ""
+    entities = ctx.misc.get("entities", [{}])[-1].get("entities", [])
+    request_data = {"entity_substr": [entities], "template": [""], "context": [[last_request]]}
+    el_output = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
+    ctx.misc["entity_linking"] = ctx.misc.get("entity_linking", []) + el_output
+    return ctx
+
+
+def get_wiki_parser_triplets(ctx: Context):
+    el_output = ctx.misc.get("entity_linking", [[]])[-1]
+    utterances = list(ctx.requests.values())
+    parser_info = ["find_top_triplets"]
+    if el_output:
+        request_data = {"parser_info": parser_info, "query": [el_output], "utt_num": len(utterances)}
+        wp_output = requests.post(WIKI_PARSER_URL, json=requested_data).json()
+        ctx.misc["wiki_parser"] = ctx.misc.get("wiki_parser", []) + wp_output
     return ctx
 
 
