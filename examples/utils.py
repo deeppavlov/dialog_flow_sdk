@@ -5,30 +5,21 @@ def join_sentences_in_or_pattern(sents):
     return r"(" + r"|".join(sents) + r")"
 
 
-def get_intents(annotated_utterance, probs=False, default_probs=None, default_labels=None, which="all"):
+def get_intents(annotated_utterance, probs=False, default_probs=None, default_labels=None):
     """Function to get intents from particular annotator or all detected.
 
     Args:
         annotated_utterance: dictionary with annotated utterance
         probs: if False we return labels, otherwise we return probs
         default_probs, default_labels: default probabilities and labels we return
-        which: which intents to return:
-            'all' means intents detected by `intent_catcher`,
-            `cobot_dialogact_intents` and  `midas_classification`.
-            'intent_catcher' means intents detected by `intent_catcher`.
-            'cobot_dialogact_intents' means intents detected by `cobot_dialogact_intents`.
-            'midas' means intents detected by `midas_classification`.
     Returns:
         list of intents
     """
     default_probs = {} if default_probs is None else default_probs
     default_labels = [] if default_labels is None else default_labels
     annotations = annotated_utterance.get("annotations", {})
-    intents = annotations.get("intent_catcher", {})
-    detected_intents = [k for k, v in intents.items() if v.get("detected", 0) == 1]
-    detected_intent_probs = {key: 1 for key in detected_intents}
 
-    midas_intent_probs = annotations.get("midas_classification", {})
+    midas_intent_probs = annotations.get("midas", {})
     if isinstance(midas_intent_probs, dict) and midas_intent_probs:
         semantic_midas_probs = {k: v for k, v in midas_intent_probs.items() if k in MIDAS_SEMANTIC_LABELS}
         functional_midas_probs = {k: v for k, v in midas_intent_probs.items() if k in MIDAS_FUNCTIONAL_LABELS}
@@ -64,52 +55,7 @@ def get_intents(annotated_utterance, probs=False, default_probs=None, default_la
             midas_intent_labels = []
     else:
         midas_intent_labels = []
-    cobot_da_intent_probs, cobot_da_intent_labels = {}, []
-
-    if "cobot_dialogact" in annotations and "intents" in annotations["cobot_dialogact"]:
-        cobot_da_intent_labels = annotated_utterance["annotations"]["cobot_dialogact"]["intents"]
-    elif "cobot_dialogact_intents" in annotations:
-        cobot_da_intent_labels = annotated_utterance["annotations"]["cobot_dialogact_intents"]
-
-    if "combined_classification" in annotations and not cobot_da_intent_labels:
-        cobot_da_intent_probs, cobot_da_intent_labels = _get_combined_annotations(
-            annotated_utterance, model_name="cobot_dialogact_intents"
-        )
-
-    cobot_da_intent_labels = _process_text(cobot_da_intent_labels)
-    if not cobot_da_intent_probs:
-        cobot_da_intent_probs = _labels_to_probs(cobot_da_intent_labels, combined_classes["cobot_dialogact_intents"])
-
-    if which == "all":
-        answer_probs = {**detected_intent_probs, **cobot_da_intent_probs, **midas_intent_probs}
-        answer_labels = detected_intents + cobot_da_intent_labels + midas_intent_labels
-    elif which == "intent_catcher":
-        answer_probs, answer_labels = detected_intent_probs, detected_intents
-    elif which == "cobot_dialogact_intents":
-        answer_probs, answer_labels = cobot_da_intent_probs, cobot_da_intent_labels
-    elif which == "midas":
-        answer_probs, answer_labels = midas_intent_probs, midas_intent_labels
-    else:
-        logger.warning(f"Unknown type in get_intents {which}")
-        answer_probs, answer_labels = default_probs, default_labels
-    if which not in ["intent_catcher", "midas"]:
-        try:
-            assert answer_labels, annotations
-        except Exception:
-            annotations_to_log = {
-                key: value
-                for key, value in annotations.items()
-                if key
-                in [
-                    "intent_catcher",
-                    "cobot_dialogact",
-                    "cobot_dialogact_intents",
-                    "combined_classification",
-                    "midas_classification",
-                ]
-            }
-            logger.warning(f"Not answer_labels with payload {annotations_to_log} which {which}")
-            answer_probs, answer_labels = default_probs, default_labels
+    answer_probs, answer_labels = midas_intent_probs, midas_intent_labels
     if probs:
         return answer_probs
     else:
