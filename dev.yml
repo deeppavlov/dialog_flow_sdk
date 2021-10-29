@@ -5,3 +5,11 @@ services:
       - "~/.deeppavlov:/root/.deeppavlov"
     ports:
       - 8103:8103
+      
+  entity-linking:
+    volumes:
+      - "./annotators/entity_linking:/src"
+      - "~/.deeppavlov:/root/.deeppavlov"
+    ports:
+      - 8075:8075
+version: "3.7"

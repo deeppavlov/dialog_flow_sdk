@@ -16,7 +16,7 @@ app = Flask(__name__)
 config_name = os.getenv("CONFIG")
 
 try:
-    el = build_model(config_name, download=True)
+    el = build_model(config_name, download=False)
     logger.info("model loaded")
 except Exception as e:
     sentry_sdk.capture_exception(e)
