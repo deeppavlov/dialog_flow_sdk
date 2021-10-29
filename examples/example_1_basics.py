@@ -241,10 +241,18 @@ testing_dialog = [
     ("Ok, goodbye.", "bye"),  # node3 -> node4
 ]
 
+testing_dialog_ext = [
+    ("Hi", "Hi, how are you?"),  # start_node -> node1
+    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
+    ("Let's talk about music.", "What is your favourite singer?"),  # node2 -> node3
+    ("Kurt Cobain.", "I also like kurt cobain songs."),  # node3 -> node4
+    ("Ok, goodbye.", "bye"),  # node4 -> node5
+]
+
 
 def run_test():
     ctx = {}
-    for in_request, true_out_response in testing_dialog:
+    for in_request, true_out_response in testing_dialog_ext:
         _, ctx = turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
     logger.info(ctx)
 
