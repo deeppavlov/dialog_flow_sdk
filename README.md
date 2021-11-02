@@ -2,6 +2,13 @@
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
 ## Prerequisites
+
+```bash
+# install dff
+pip install dff
+# install dashboard for stats
+pip install dff-node-stats[dashboard] 
+```
 ### Environment
 
 | Item           | Requirements                                          | Comments                                                     |
