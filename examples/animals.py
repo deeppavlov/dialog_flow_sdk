@@ -38,7 +38,8 @@ plot = {
                     ]
                 ),
             },
-            RESPONSE: "I'm fine. Jack, a friend of mine told me about their new cat, Lucy. She's so cuddlesome! Do you like pets?",
+            RESPONSE: "I'm fine. Jack, a friend of mine told me about their new cat, Lucy. "
+            "She's so cuddlesome! Do you like pets?",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
         },
         "cool_and_clarify_which_pets": {

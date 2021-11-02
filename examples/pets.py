@@ -23,7 +23,8 @@ plot = {
                 "cool_and_clarify_which_pets": cnd.all([dm_cnd.is_sf("React.Respond.Support.Reply.Agree")]),
                 "sad_and_say_about_pets": cnd.all([dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree")]),
             },
-            RESPONSE: "I'm fine. Jack, a friend of mine told me about their new cat, Lucy. She's so cuddlesome! Do you like pets, too?",
+            RESPONSE: "I'm fine. Jack, a friend of mine told me about their new cat, Lucy. "
+            "She's so cuddlesome! Do you like pets, too?",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
         },
         "cool_and_clarify_which_pets": {
