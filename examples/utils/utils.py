@@ -1,5 +1,12 @@
 import re
+from copy import deepcopy
 
+
+MIDAS_SEMANTIC_LABELS = ['open_question_factual', 'open_question_opinion', 'open_question_personal',
+                         'yes_no_question', 'clarifying_question', 'command', 'dev_command', 'appreciation',
+                         'opinion', 'complaint', 'comment', 'statement', 'other_answers', 'pos_answer', 'neg_answer']
+MIDAS_FUNCTIONAL_LABELS = ['abandon', 'nonsense', 'opening', 'closing', 'hold', 'back-channeling', 'uncertain',
+                           'non_compliant', 'correction']
 
 def join_sentences_in_or_pattern(sents):
     return r"(" + r"|".join(sents) + r")"
