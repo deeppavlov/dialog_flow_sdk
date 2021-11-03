@@ -2,7 +2,7 @@ import logging
 
 from examples.utils import common
 
-from examples import basics
+from examples import basics as test
 
 # testing
 testing_dialog = [
@@ -25,4 +25,4 @@ if __name__ == "__main__":
         format="%(asctime)s-%(name)15s:%(lineno)3s:%(funcName)20s():%(levelname)s - %(message)s",
         level=logging.INFO,
     )
-    common.run_test(basics.actor, testing_dialog)
+    common.run_test(test.actor, testing_dialog)
