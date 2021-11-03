@@ -21,32 +21,108 @@ HIGH_CONFIDENCE = 0.98
 GENERIC_REACTION_TO_USER_SPEECH_FUNCTION = {
     "React.Rejoinder.Support.Track.Check": ["Pardon?", "I beg your pardon?", "Mhm ?", "Hm?", "What do you mean?"],
     "React.Rejoinder.Track.Check": ["Pardon?", "I beg your pardon?", "Mhm ?", "Hm?", "What do you mean?"],
-    "React.Rejoinder.Support.Track.Confirm": 
-      ["Oh really?", "Oh yeah?", "Sure?", "Are you sure?", "Are you serious?", "Yeah"],
-    "React.Respond.Confront.Reply.Contradict":
-      ["Oh definitely no", "No", "No way", "Absolutely not", "Not at all", "Nope", "Not really", "Hardly"],
-    "React.Respond.Reply.Contradict":
-      ["Oh definitely no", "No", "No way", "Absolutely not", "Not at all", "Nope", "Not really", "Hardly"],
-    "React.Respond.Confront.Reply.Disawow":
-      ["I doubt it. I really do.", "I don't know.", "I'm not sure", "Probably.", "I don't know if it's true"],
-    "React.Respond.Reply.Disawow":
-      ["I doubt it. I really do.", "I don't know.", "I'm not sure", "Probably.", "I don't know if it's true"],
-    "React.Respond.Confront.Reply.Disagree":
-      ["No", "Hunhunh.", "I don't agree with you", "I disagree", "I do not think so", "I hardly think so",
-       "I can't agree with you"],
-    "React.Respond.Reply.Disagree":
-      ["No", "Hunhunh.", "I don't agree with you", "I disagree", "I do not think so", "I hardly think so",
-       "I can't agree with you"],
-    "React.Respond.Support.Reply.Affirm":
-      ["Oh definitely.", "Yeah.", "Kind of.", "Unhunh", "Yeah I think so", "Really.", "Right.", "That's what it was."],
-    "React.Respond.Support.Reply.Acknowledge":
-      ["I knew that.", "I know.", "No doubts", "I know what you meant.", "Oh yeah.", "I see"],
-    "React.Respond.Reply.Acknowledge":
-      ["I knew that.", "I know.", "No doubts", "I know what you meant.", "Oh yeah.", "I see"],
-    "React.Respond.Support.Reply.Agree":
-      ["Oh that's right. That's right.", "Yep.", "Right.", "Sure", "Indeed", "I agree with you"],
-    "React.Respond.Reply.Agree":
-      ["Oh that's right. That's right.", "Yep.", "Right.", "Sure", "Indeed", "I agree with you"],
+    "React.Rejoinder.Support.Track.Confirm": [
+        "Oh really?",
+        "Oh yeah?",
+        "Sure?",
+        "Are you sure?",
+        "Are you serious?",
+        "Yeah",
+    ],
+    "React.Respond.Confront.Reply.Contradict": [
+        "Oh definitely no",
+        "No",
+        "No way",
+        "Absolutely not",
+        "Not at all",
+        "Nope",
+        "Not really",
+        "Hardly",
+    ],
+    "React.Respond.Reply.Contradict": [
+        "Oh definitely no",
+        "No",
+        "No way",
+        "Absolutely not",
+        "Not at all",
+        "Nope",
+        "Not really",
+        "Hardly",
+    ],
+    "React.Respond.Confront.Reply.Disawow": [
+        "I doubt it. I really do.",
+        "I don't know.",
+        "I'm not sure",
+        "Probably.",
+        "I don't know if it's true",
+    ],
+    "React.Respond.Reply.Disawow": [
+        "I doubt it. I really do.",
+        "I don't know.",
+        "I'm not sure",
+        "Probably.",
+        "I don't know if it's true",
+    ],
+    "React.Respond.Confront.Reply.Disagree": [
+        "No",
+        "Hunhunh.",
+        "I don't agree with you",
+        "I disagree",
+        "I do not think so",
+        "I hardly think so",
+        "I can't agree with you",
+    ],
+    "React.Respond.Reply.Disagree": [
+        "No",
+        "Hunhunh.",
+        "I don't agree with you",
+        "I disagree",
+        "I do not think so",
+        "I hardly think so",
+        "I can't agree with you",
+    ],
+    "React.Respond.Support.Reply.Affirm": [
+        "Oh definitely.",
+        "Yeah.",
+        "Kind of.",
+        "Unhunh",
+        "Yeah I think so",
+        "Really.",
+        "Right.",
+        "That's what it was.",
+    ],
+    "React.Respond.Support.Reply.Acknowledge": [
+        "I knew that.",
+        "I know.",
+        "No doubts",
+        "I know what you meant.",
+        "Oh yeah.",
+        "I see",
+    ],
+    "React.Respond.Reply.Acknowledge": [
+        "I knew that.",
+        "I know.",
+        "No doubts",
+        "I know what you meant.",
+        "Oh yeah.",
+        "I see",
+    ],
+    "React.Respond.Support.Reply.Agree": [
+        "Oh that's right. That's right.",
+        "Yep.",
+        "Right.",
+        "Sure",
+        "Indeed",
+        "I agree with you",
+    ],
+    "React.Respond.Reply.Agree": [
+        "Oh that's right. That's right.",
+        "Yep.",
+        "Right.",
+        "Sure",
+        "Indeed",
+        "I agree with you",
+    ],
     "Sustain.Continue.Monitor": ["You know?", "Alright?", "Yeah?", "See?", "Right?"],
 }
 
@@ -90,16 +166,19 @@ def is_speech_function_agree(ctx):
     sf_type, sf_confidence = get_speech_function(ctx)
     flag = sf_type and bool(re.search(agree_patterns_re, sf_type))
     # fallback to yes/no intents
-    annotated_human_utterance = {"text": ctx.last_request,
-                                 "annotations": {"midas": ctx.misc["midas"][-1]}}
+    annotated_human_utterance = {"text": ctx.last_request, "annotations": {"midas": ctx.misc["midas"][-1]}}
     flag = flag or common_utils.is_yes(annotated_human_utterance)
 
     return flag
 
 
 patterns_disagree = [
-    "Support.Reply.Decline", "Support.Reply.Disagree", "Support.Reply.Non-comply",
-    "Support.Reply.Withold", "Support.Reply.Disawow", "Support.Reply.Conflict"
+    "Support.Reply.Decline",
+    "Support.Reply.Disagree",
+    "Support.Reply.Non-comply",
+    "Support.Reply.Withold",
+    "Support.Reply.Disawow",
+    "Support.Reply.Conflict",
 ]
 disagree_patterns_re = re.compile("(" + "|".join(patterns_disagree) + ")", re.IGNORECASE)
 
@@ -108,8 +187,7 @@ def is_speech_function_disagree(ctx):
     sf_type, sf_confidence = get_speech_function(ctx)
     flag = sf_type and bool(re.search(disagree_patterns_re, sf_type))
     # fallback to yes/no intents
-    annotated_human_utterance = {"text": ctx.last_request,
-                                 "annotations": {"midas": ctx.misc["midas"][-1]}}
+    annotated_human_utterance = {"text": ctx.last_request, "annotations": {"midas": ctx.misc["midas"][-1]}}
     flag = flag or common_utils.is_no(annotated_human_utterance)
 
     return flag
@@ -125,14 +203,16 @@ def is_speech_function_express_opinion(ctx):
     sf_type, sf_confidence = get_speech_function(ctx)
     flag = sf_type and bool(re.search(express_opinion_patterns_re, sf_type))
     # fallback to MIDAS & CoBot
-    annotated_human_utterance = {"text": ctx.last_request,
-                                 "annotations": {"midas": ctx.misc["midas"][-1]}}
+    annotated_human_utterance = {"text": ctx.last_request, "annotations": {"midas": ctx.misc["midas"][-1]}}
     flag = flag or common_utils.is_opinion_expression(annotated_human_utterance)
     # # fallback to CoBot intents
     flag = flag or common_utils.is_no(annotated_human_utterance)
     # bug check (sometimes opinion by MIDAS can be incorrectly detected in a simple yes/no answer from user)
-    flag = flag and not common_utils.is_no(annotated_human_utterance) \
+    flag = (
+        flag
+        and not common_utils.is_no(annotated_human_utterance)
         and not common_utils.is_yes(annotated_human_utterance)
+    )
     return flag
 
 
@@ -143,16 +223,18 @@ demand_opinion_patterns_re = re.compile("(" + "|".join(patterns_demand_opinion) 
 
 
 def is_speech_function_demand_opinion(ctx):
-    annotated_human_utterance = {"text": ctx.last_request,
-                                 "annotations": {"midas": ctx.misc["midas"][-1]}}
+    annotated_human_utterance = {"text": ctx.last_request, "annotations": {"midas": ctx.misc["midas"][-1]}}
     sf_type, sf_confidence = get_speech_function(ctx)
     flag = sf_type and bool(re.search(demand_opinion_patterns_re, sf_type))
     # # fallback to CoBot & MIDAS intents
     flag = flag or common_utils.is_opinion_request(annotated_human_utterance)
     flag = flag or common_utils.is_no(annotated_human_utterance)
     # bug check (sometimes opinion by MIDAS can be incorrectly detected in a simple yes/no answer from user)
-    flag = flag and not common_utils.is_no(annotated_human_utterance) \
+    flag = (
+        flag
+        and not common_utils.is_no(annotated_human_utterance)
         and not common_utils.is_yes(annotated_human_utterance)
+    )
     return flag
 
 

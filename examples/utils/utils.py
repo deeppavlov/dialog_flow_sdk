@@ -87,7 +87,7 @@ def is_donot_know(annotated_phrase):
 
 
 def is_no_intent(annotated_phrase):
-    midas_no_detected = "neg_answer" in get_intents(annotated_phrase, which='midas', probs=False)
+    midas_no_detected = "neg_answer" in get_intents(annotated_phrase, which="midas", probs=False)
     is_not_idontknow = not is_donot_know(annotated_phrase)
     if midas_no_detected and is_not_idontknow:
         return True

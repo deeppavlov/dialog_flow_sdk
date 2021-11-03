@@ -115,6 +115,7 @@ def entity_extraction(**ent_kwargs):
                         shared_memory["slot_values"] = slot_values
                         ctx.misc["shared_memory"] = shared_memory
         return node_label, node
+
     return entity_extraction_func
 
 

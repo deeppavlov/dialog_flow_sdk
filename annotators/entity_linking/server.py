@@ -115,11 +115,13 @@ def respond():
             entity_substr_batch, template_batch, long_context_batch, entity_types_batch, short_context_batch
         )
         entity_info_batch = []
-        for entity_substr_list, entity_ids_list, conf_list, tokens_match_conf_list, context in \
-                zip(entity_substr_batch, entity_ids_batch, conf_batch, tokens_match_conf_batch, short_context_batch):
+        for entity_substr_list, entity_ids_list, conf_list, tokens_match_conf_list, context in zip(
+            entity_substr_batch, entity_ids_batch, conf_batch, tokens_match_conf_batch, short_context_batch
+        ):
             entity_info_list = []
-            for entity_substr, entity_ids, conf, tokens_match_conf in \
-                    zip(entity_substr_list, entity_ids_list, conf_list, tokens_match_conf_list):
+            for entity_substr, entity_ids, conf, tokens_match_conf in zip(
+                entity_substr_list, entity_ids_list, conf_list, tokens_match_conf_list
+            ):
                 entity_info = {}
                 entity_info["entity_substr"] = entity_substr
                 entity_info["entity_ids"] = entity_ids

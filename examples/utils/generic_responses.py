@@ -27,7 +27,23 @@ nlp = spacy.load("en_core_web_sm")
 nltk.download("punkt")
 
 
-registers = ['God', 'Gosh', 'Hm', 'Hmm', 'Hunh', 'Mhm', 'Mm', 'Oh', 'Okay', 'Unhunh', 'Well', 'Yeah', 'Yes', 'whoa', 'yeah']
+registers = [
+    "God",
+    "Gosh",
+    "Hm",
+    "Hmm",
+    "Hunh",
+    "Mhm",
+    "Mm",
+    "Oh",
+    "Okay",
+    "Unhunh",
+    "Well",
+    "Yeah",
+    "Yes",
+    "whoa",
+    "yeah",
+]
 
 # endregion
 
@@ -98,15 +114,24 @@ def is_last_bot_utterance_by_us(ctx):
     node_labels = ctx.node_labels
     utt_nums = list(node_labels.keys())
     utt_nums = sorted(utt_nums)
-    if node_labels[utt_nums[-1]] in [("generic_response", "generic_response_flow"), ("start_node", "generic_response_flow")]:
+    if node_labels[utt_nums[-1]] in [
+        ("generic_response", "generic_response_flow"),
+        ("start_node", "generic_response_flow"),
+    ]:
         return True
 
     return False
 
 
 reply_affirm = [
-    "Oh definitely.", "Yeah.", "Kind of.", "Unhunh",
-    "Yeah I think so", "Really.", "Right.", "That's what it was."
+    "Oh definitely.",
+    "Yeah.",
+    "Kind of.",
+    "Unhunh",
+    "Yeah I think so",
+    "Really.",
+    "Right.",
+    "That's what it was.",
 ]
 
 
@@ -199,7 +224,7 @@ def generic_response_condition(ctx: Context, actor: Actor, *args, **kwargs):
 def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
     logger.debug("exec usr_response_to_speech_function_response")
     interrogative_words = ["whose", "what", "which", "who", "whom", "what", "which", "why", "where", "when", "how"]
-    
+
     try:
         human_utterance = ctx.last_request
         phrases = nltk.sent_tokenize(human_utterance)
@@ -248,7 +273,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
                     generic_responses.append(generic_response)
 
         # generating response
-        questions = ["Hi", "Hello", "Well hello there!", "Look what the cat dragged in!"]  
+        questions = ["Hi", "Hello", "Well hello there!", "Look what the cat dragged in!"]
 
         if not generic_responses:
             response = random.choice(questions)
@@ -257,9 +282,9 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         if generic_responses:
             response = random.choice(generic_responses)
         logger.info(f"generic_response_generate {response}")
-        
+
         return response
-    
+
     except Exception as exc:
         logger.exception(exc)
         logger.info(f"generic_response_generate: Exception: {exc}")
@@ -275,5 +300,5 @@ generic_responses_flow = {
     "generic_response": {
         RESPONSE: generic_response_generate,
         TRANSITIONS: {trn.repeat(): generic_response_condition},
-    }
+    },
 }

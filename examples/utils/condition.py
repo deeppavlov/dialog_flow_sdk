@@ -11,6 +11,7 @@ def is_sf(sf_name="Open.Give.Opinion"):
 
     return is_sf_handler
 
+
 def is_midas(midas_name="pos_answer", treshhold=0.5):
     def is_midas_handler(ctx: Context, actor: Actor, *args, **kwargs):
         return midas_name in [key for key, val in ctx.misc.get("midas", [{}])[-1].items() if val > treshhold]

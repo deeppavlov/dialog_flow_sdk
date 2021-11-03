@@ -43,6 +43,7 @@ def run_test(actor, testing_dialog):
         _, ctx = turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
     logger.info(ctx)
 
+
 # interactive mode
 def run_interactive_mode(actor):
     ctx = {}
