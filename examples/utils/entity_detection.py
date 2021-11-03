@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Optional, Union
+from typing import Optional
 from dff.core import Context, Actor, Node
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def find_entity_by_types(wp_output, types_to_find, relations=None):
                 )
                 type_ids = [elem for elem, label in types]
                 inters = set(type_ids).intersection(types_to_find)
-                conf = triplets["conf"]
+                # conf = triplets["conf"]
                 pos = triplets.get("pos", 5)
                 if inters and pos < 2:
                     found_entity_wp = entity

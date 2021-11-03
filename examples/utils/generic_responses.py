@@ -5,14 +5,11 @@ import re
 
 import sentry_sdk
 
-from collections import defaultdict
 import spacy
-import json
 
 import nltk
-from nltk import wordpunct_tokenize
 from nltk import word_tokenize
-import dff.transitions as trn
+import dff.labels as lbl
 from dff.core.keywords import TRANSITIONS, RESPONSE
 from dff.core import Context, Actor
 
@@ -248,7 +245,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
                     logger.info(f"Found Speech Function: {sf_functions}")
 
         if not sf_functions:
-            logger.info(f"generic_response_generate, no response")
+            logger.info("generic_response_generate, no response")
             return ""
 
         last_phrase_function = list(sf_functions)[-1]
@@ -257,7 +254,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         logger.info(f"Proposed Speech Functions: {sf_predictions}")
 
         if not sf_predictions:
-            logger.info(f"generic_response_generate, no response")
+            logger.info("generic_response_generate, no response")
             return ""
 
         generic_responses = []
@@ -299,6 +296,6 @@ generic_responses_flow = {
     },
     "generic_response": {
         RESPONSE: generic_response_generate,
-        TRANSITIONS: {trn.repeat(): generic_response_condition},
+        TRANSITIONS: {lbl.repeat(): generic_response_condition},
     },
 }

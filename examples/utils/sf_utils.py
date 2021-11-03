@@ -1,9 +1,7 @@
 import logging
-import os
 import re
 
 import nltk
-import statistics
 
 import utils as common_utils
 
