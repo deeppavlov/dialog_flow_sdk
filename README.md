@@ -2,6 +2,13 @@
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
 ## Prerequisites
+
+```bash
+# install dff
+pip install dff
+# install dashboard for stats
+pip install dff-node-stats[dashboard] 
+```
 ### Environment
 
 | Item           | Requirements                                          | Comments                                                     |
@@ -33,3 +40,7 @@ Follow these instructions to run the Discourse Moves Recommendation System:
 docker-compose up -d --build
 ```
 After that sf predictor is availible on `localhost:8107/annotation` and sf classifier is availible on `localhost:8108/annotation` 
+## Generic Responses
+TBD
+## Entity Detection
+TBD
