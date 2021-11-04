@@ -91,8 +91,6 @@ def has_entities(entity_types):
 
 def entity_extraction(**ent_kwargs):
     def entity_extraction_func(
-        node_label: str,
-        node: Node,
         ctx: Context,
         actor: Actor,
         *args,
@@ -114,20 +112,19 @@ def entity_extraction(**ent_kwargs):
                         slot_values[slot_name] = extracted_entity
                         shared_memory["slot_values"] = slot_values
                         ctx.misc["shared_memory"] = shared_memory
-        return node_label, node
+        return ctx
 
     return entity_extraction_func
 
 
 def slot_filling(
-    node_label: str,
-    node: Node,
     ctx: Context,
     actor: Actor,
     *args,
     **kwargs,
 ) -> Optional[tuple[str, Node]]:
-    prev_response = node.response
+    processed_node = ctx.a_s.get("processed_node", ctx.a_s["next_node"])
+    prev_response = processed_node.response
     slot_name = re.findall(r"\[(.*?)\]", prev_response)
     shared_memory = ctx.misc.get("shared_memory", {})
     slot_values = shared_memory.get("slot_values", {})
@@ -137,5 +134,6 @@ def slot_filling(
         response = prev_response.replace(replace_str, slot_value)
     else:
         response = prev_response
-    node.response = response
-    return node_label, node
+    processed_node.response = response
+    ctx.a_s["processed_node"] = processed_node
+    return ctx

@@ -13,7 +13,7 @@ import dff.labels as lbl
 from dff.core.keywords import TRANSITIONS, RESPONSE
 from dff.core import Context, Actor
 
-import sf_utils
+from utils import sf_utils
 
 sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"))
 
