@@ -1,6 +1,7 @@
 import logging
 import re
-from typing import Optional
+from typing import Optional, Tuple
+
 from dff.core import Context, Actor, Node
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ def entity_extraction(**ent_kwargs):
         actor: Actor,
         *args,
         **kwargs,
-    ) -> Optional[tuple[str, Node]]:
+    ) -> Optional[Tuple[str, Node]]:
         shared_memory = ctx.misc.get("shared_memory", {})
         slot_values = shared_memory.get("slot_values", {})
         for slot_name, slot_types in ent_kwargs.items():
@@ -122,7 +123,7 @@ def slot_filling(
     actor: Actor,
     *args,
     **kwargs,
-) -> Optional[tuple[str, Node]]:
+) -> Optional[Tuple[str, Node]]:
     processed_node = ctx.a_s.get("processed_node", ctx.a_s["next_node"])
     prev_response = processed_node.response
     slot_name = re.findall(r"\[(.*?)\]", prev_response)

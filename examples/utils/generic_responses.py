@@ -1,12 +1,8 @@
-import os
 import logging
 import random
 import re
 
-import sentry_sdk
-
 import spacy
-
 import nltk
 from nltk import word_tokenize
 import dff.labels as lbl
@@ -15,7 +11,6 @@ from dff.core import Context, Actor
 
 from utils import sf_utils
 
-sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"))
 
 logger = logging.getLogger(__name__)
 
@@ -212,7 +207,6 @@ def generic_response_condition(ctx: Context, actor: Actor, *args, **kwargs):
     except Exception as exc:
         logger.exception(exc)
         logger.info(f"sys_response_to_speech_function_request: Exception: {exc}")
-        sentry_sdk.capture_exception(exc)
 
     logger.info(f"generic_response_condition: {flag}")
     return flag
@@ -285,7 +279,6 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
     except Exception as exc:
         logger.exception(exc)
         logger.info(f"generic_response_generate: Exception: {exc}")
-        sentry_sdk.capture_exception(exc)
         return ""
 
 
