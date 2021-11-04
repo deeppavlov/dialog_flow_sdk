@@ -1,14 +1,36 @@
 ## Welcome to DD-IDE SDK
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
+## Python 3.9 - set as default (optional)
+1. Install the python3.9 package using apt-get
+
+```sudo apt-get install python3.9```
+
+Add *Python3.6* & *Python 3.9* to update-alternatives
+
+```sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1```
+```sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 2```
+
+Update Python 3 to point to Python 3.9:
+
+```sudo update-alternatives --config python3```
+
+Enter 2 for Python 3.9
+
+Test the version of python:
+
+```python3 --version```
+```Python 3.9``` 
+
+Test the version of python used by pip3 command:
+
+```pip3 --version```
+```pip 21.3.1 from /home/danielko/.local/lib/python3.9/site-packages/pip (python 3.9)```
+
 ## Prerequisites
 
-```bash
-# install dff
-pip install dff
-# install dashboard for stats
-pip install dff-node-stats[dashboard] 
-```
+```pip3 install lxml```
+
 ### Environment
 
 | Item           | Requirements                                          | Comments                                                     |
@@ -30,8 +52,18 @@ We use [Dialog Flow Framework](https://www.github.com/deepmipt/dialog_flow_frame
 
 Follow these instructions to install Dialog Flow Framework:
 ```bash
+# install dff
+pip install dff
+# install dashboard for stats
+pip install dff-node-stats[dashboard] 
+```
+
+Follow these requirements to prepare DD-IDDE SDK to run on your machine:
+
+```bash
 pip install -r requirements.txt
 ```
+
 ## Discourse Moves Recommendation System
 We use our Speech Functions Classifier & Predictor from our larger [DeepPavlov Dream](https://www.github.com/deepmipt/dream) Multiskill AI Assistant Platform.
 
