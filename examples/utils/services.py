@@ -20,6 +20,7 @@ def get_sf(ctx: Context):
         "prev_speech_function": prev_speech_function,
     }
     speech_functions = requests.post(SF_URL, json=requested_data).json()
+    logger.info(f"speech_functions={speech_functions}")
     ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
     return ctx
 
@@ -30,5 +31,6 @@ def get_midas(ctx: Context):
         "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
     }
     midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
+    logger.info(f"midas={midas}")
     ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
     return ctx
