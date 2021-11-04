@@ -1,4 +1,5 @@
 import logging
+import random
 import re
 
 import nltk
@@ -142,6 +143,7 @@ def get_speech_function(ctx):
 
 def get_speech_function_predictions(ctx):
     predicted_sfs = [ctx.misc.get("sf_predictions", [""])[-1]]
+    logger.info(f"predicted_sfs {predicted_sfs}")
     return predicted_sfs
 
 
@@ -236,14 +238,31 @@ def is_speech_function_demand_opinion(ctx):
     return flag
 
 
-def get_not_used_and_save_generic_response(proposed_sf, ctx):
+def get_not_used_template(used_templates, all_templates, any_if_no_available=True, random_response=False):
+    available = list(set(all_templates).difference(set(used_templates)))
+    if available:
+        if random_response:
+            return random.choice(available)
+        else:
+            return available[0]
+    elif any_if_no_available:
+        if random_response:
+            return random.choice(all_templates)
+        else:
+            return all_templates[0]
+    else:
+        return ""
+
+
+def get_not_used_and_save_generic_response(proposed_sf, ctx, random_response):
     logger.info(f"Getting not yet used generic response for proposed speech function {proposed_sf}...")
     shared_memory = ctx.misc.get("shared_memory", {})
     last_responses = shared_memory.get(proposed_sf + "_last_responses", [])
 
-    resp = common_utils.get_not_used_template(
+    resp = get_not_used_template(
         used_templates=last_responses,
         all_templates=GENERIC_REACTION_TO_USER_SPEECH_FUNCTION[proposed_sf],
+        random_response=random_response
     )
 
     used_resp = last_responses + [resp]

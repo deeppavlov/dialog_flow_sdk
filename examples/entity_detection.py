@@ -1,13 +1,13 @@
 import logging
 
-from dff.core.keywords import TRANSITIONS, RESPONSE
+from dff.core.keywords import TRANSITIONS, RESPONSE, PROCESSING
 from dff.core import Actor
 import dff.conditions as cnd
 import dff.labels as lbl
 
 from utils import condition as dm_cnd
 from utils import common
-from utils.generic_responses import generic_response_condition, generic_response_generate
+from utils.entity_detection import has_entities, entity_extraction, slot_filling
 
 
 logger = logging.getLogger(__name__)
@@ -21,27 +21,33 @@ plot_extended = {
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
-            TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?"),
-                          ("generic_responses_flow", "generic_response"): generic_response_condition,
-            },
+            TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?")},
         },
         "node2": {
-            RESPONSE: "Good. I'm glad that you are having a good time.",
+            RESPONSE: "Good. What do you want to talk about?",
+            TRANSITIONS: {
+                "node3": cnd.exact_match("Let's talk about music.")
+            },
+        },
+        "node3": {
+            RESPONSE: "What is your favourite singer?",
+            TRANSITIONS: {"node4": has_entities(["tags:person", "tags:videoname", "wiki:Q177220"])},
+        },
+        "node4": {
+            PROCESSING: {
+                1: entity_extraction(singer=["tags:person", "tags:videoname", "wiki:Q177220"]),
+                2: slot_filling,
+            },
+            RESPONSE: "I also like [singer] songs.",
+            TRANSITIONS: {"node5": cnd.exact_match("Ok, goodbye.")},
+        },
+        "node5": {
+            RESPONSE: "bye",
             TRANSITIONS: {"node1": cnd.exact_match("Hi")},
         },
         "fallback_node": {  # We get to this node if an error occurred while the agent was running
             RESPONSE: "Ooops",
             TRANSITIONS: {"node1": cnd.exact_match("Hi")},
-        }
-    },
-    "generic_responses_flow": {
-        "start_node": {
-            RESPONSE: "",
-            TRANSITIONS: {"generic_response": generic_response_condition},
-        },
-        "generic_response": {
-            RESPONSE: generic_response_generate,
-            TRANSITIONS: {lbl.repeat(): generic_response_condition},
         },
     }
 }

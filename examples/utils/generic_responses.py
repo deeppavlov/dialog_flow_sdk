@@ -12,6 +12,8 @@ from dff.core import Context, Actor
 from utils import sf_utils
 
 
+RANDOM_RESPONSE = False
+
 logger = logging.getLogger(__name__)
 
 # required for Generic Response function
@@ -20,6 +22,8 @@ nltk.download("punkt")
 
 
 registers = [
+    "Yes",
+    "Okay",
     "God",
     "Gosh",
     "Hm",
@@ -28,17 +32,12 @@ registers = [
     "Mhm",
     "Mm",
     "Oh",
-    "Okay",
     "Unhunh",
     "Well",
     "Yeah",
-    "Yes",
     "whoa",
     "yeah",
 ]
-
-# endregion
-
 
 # region CONFIDENCES
 DIALOG_BEGINNING_START_CONFIDENCE = 0.98
@@ -67,19 +66,16 @@ def is_supported_speech_function(ctx, human_utterance, bot_utterance):
     sf_predictions = sf_utils.get_speech_function_predictions(ctx)
     if sf_predictions:
         sf_predictions_list = list(sf_predictions)
-        sf_predictions_for_last_phrase = sf_predictions_list[-1]
-
-        for sf_predicted in sf_predictions_for_last_phrase:
-            prediction = sf_predicted["prediction"]
-            logger.info(f"prediction: {prediction}")
-            supported = bool(re.search(supported_speech_functions_patterns_re, prediction))
+        for sf_predicted in sf_predictions_list:
+            supported = bool(re.search(supported_speech_functions_patterns_re, sf_predicted))
+            logger.info(f"prediction: {sf_predicted}, supported {supported}")
             if supported:
                 logger.info(
                     f"At least one of the proposed speech functions is supported "
                     f"for generic response: {sf_predicted}"
                 )
                 return True
-    return True
+    return False
 
 
 def get_pre_last_human_utterance(ctx):
@@ -103,13 +99,11 @@ def is_last_bot_utterance_by_us(ctx):
     if len(bot_utterances) == 0:
         return False
 
-    node_labels = ctx.node_labels
+    node_labels = ctx.labels
+    logger.info(f"generic responses, node labels {node_labels}")
     utt_nums = list(node_labels.keys())
     utt_nums = sorted(utt_nums)
-    if node_labels[utt_nums[-1]] in [
-        ("generic_response", "generic_response_flow"),
-        ("start_node", "generic_response_flow"),
-    ]:
+    if node_labels[utt_nums[-1]] == ("generic_responses_flow", "generic_response"):
         return True
 
     return False
@@ -165,24 +159,30 @@ def confirm_response(previous_phrase):
             previous_phrase = re.sub("I", "you", previous_phrase)
         next_sent = previous_phrase + "?"
     else:
-        next_sent = random.choice(track_confirm)
+        if RANDOM_RESPONSE:
+            next_sent = random.choice(track_confirm)
+        else:
+            next_sent = track_confirm[0]
     return next_sent
 
 
 def generate_response(ctx, predicted_sf, previous_phrase, enable_repeats_register=False, user_name=""):
     response = None
     if "Register" in predicted_sf:
-        response = random.choice(registers)
+        if RANDOM_RESPONSE:
+            response = random.choice(registers)
+        else:
+            response = registers[0]
         if enable_repeats_register is True:
             response = word_tokenize(previous_phrase)[-1].capitalize() + "."
     if "Check" in predicted_sf:
-        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx)
+        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx, random_response=RANDOM_RESPONSE)
     if "Confirm" in predicted_sf:
         response = confirm_response(previous_phrase)
     if "Affirm" in predicted_sf:
-        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx)
+        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx, random_response=RANDOM_RESPONSE)
     if "Agree" in predicted_sf:
-        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx)
+        response = sf_utils.get_not_used_and_save_generic_response(predicted_sf, ctx, random_response=RANDOM_RESPONSE)
     if "Clarify" in predicted_sf:
         response = clarify_response(previous_phrase)
     return response
@@ -231,15 +231,15 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
                 else:
                     cont = False
             if cont:
-                sf_functions = sf_utils.get_speech_function_for_human_utterance(ctx)
+                sf_functions = sf_utils.get_speech_function(ctx)
                 logger.info(f"Found Speech Function: {sf_functions}")
             else:
                 if word_tokenize(human_utterance)[0] not in interrogative_words:
-                    sf_functions = sf_utils.get_speech_function_for_human_utterance(ctx)
+                    sf_functions = sf_utils.get_speech_function(ctx)
                     logger.info(f"Found Speech Function: {sf_functions}")
 
         if not sf_functions:
-            logger.info("generic_response_generate, no response")
+            logger.info("generic_response_generate, not sf_functions")
             return ""
 
         last_phrase_function = list(sf_functions)[-1]
@@ -248,17 +248,15 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         logger.info(f"Proposed Speech Functions: {sf_predictions}")
 
         if not sf_predictions:
-            logger.info("generic_response_generate, no response")
+            logger.info("generic_response_generate, not sf_predictions")
             return ""
 
         generic_responses = []
 
         sf_predictions_list = list(sf_predictions)
-        sf_predictions_for_last_phrase = sf_predictions_list[-1]
-
-        for sf_prediction in sf_predictions_for_last_phrase:
-            prediction = sf_prediction["prediction"]
-            generic_response = generate_response(ctx, prediction, last_phrase_function, False, "")
+        logger.info(f"generic responses, sf_predictions_list {sf_predictions_list}")
+        for sf_prediction in sf_predictions_list:
+            generic_response = generate_response(ctx, sf_prediction, last_phrase_function, False, "")
             if generic_response is not None:
                 if generic_response != "??" and generic_response != ".?":
                     generic_responses.append(generic_response)

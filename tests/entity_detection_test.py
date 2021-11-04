@@ -2,13 +2,15 @@ import logging
 
 from examples.utils import common
 
-from examples import generic_responses as test
+from examples import entity_detection as test
 
 # testing
 testing_dialog = [
     ("Hi", "Hi, how are you?"),  # start_node -> node1
-    ("I'm fine, square root of two times square root of three is square root of six is it?", "Yes"),  # node1 -> generic_response
-    ("Ok", "Ooops"),  # generic_response -> fallback_node
+    ("i'm fine, how are you?", "Good. What do you want to talk about?"),  # node1 -> node2
+    ("Let's talk about music.", "What is your favourite singer?"),  # node2 -> node3
+    ("Kurt Cobain.", "I also like kurt cobain songs."),  # node3 -> node4
+    ("Ok, goodbye.", "bye"),  # node4 -> node5
 ]
 
 
