@@ -1,6 +1,5 @@
 # base
 requests==2.26.0
 nltk==3.6.5
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz#egg=en_core_web_sm==2.2.5
 dff>=0.1.a7
 dff-node-stats>=0.1.a2

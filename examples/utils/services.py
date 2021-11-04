@@ -38,7 +38,7 @@ def get_sfp(ctx: Context):
         last_sf = ctx.misc.get("speech_functions", [[None]])[-1][-1]
         requested_data = [last_sf]
         sf_predictions = requests.post(SFP_URL, json=requested_data).json()
-        ctx.misc["sf_predictions"] = ctx.misc.get("sf_predictions", []) + sf_predictions[-1][0]["prediction"]
+        ctx.misc["sf_predictions"] = ctx.misc.get("sf_predictions", []) + [sf_predictions[-1][0]["prediction"]]
     except requests.exceptions.ConnectionError as exc:
         logger.warning(exc)
     return ctx

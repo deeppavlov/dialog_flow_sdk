@@ -4,6 +4,9 @@ This is an early alpha version of the DD-IDDE SDK. It is used in combination wit
 ## Prerequisites
 
 ```bash
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+
 # install dff
 pip install dff
 # install dashboard for stats
