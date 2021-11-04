@@ -1,7 +1,24 @@
 ## Welcome to DD-IDE SDK
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
-## Python 3.9 - set as default (optional)
+## Requirements
+
+### Environment
+
+| Item           | Requirements                                          | Comments                                                     |
+| -------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| OS             | Debian-based distribution, e.g., Ubuntu or Windows 10 | This version was tested on Ubuntu 18.04 under WSL2 on Windows 11 and Windows 10. |
+| Python         | v3.9+                                                 | This version was tested on OS with Python 3.9.               |
+| Docker         | v20+                                                  | This version was tested with Docker v20.10.7 (64-bit).       |
+| Docker-Compose | v1.29.2                                               | This version was tested with Docker-Compose v1.29.2.         |
+
+### VS Code Extensions
+DD-IDDE
+Python
+WSL
+Docker
+
+### Python 3.9 - set as default (optional)
 1. Install the python3.9 package using apt-get
 
 ```sudo apt-get install python3.9```
@@ -27,24 +44,9 @@ Test the version of python used by pip3 command:
 ```pip3 --version```
 ```pip 21.3.1 from /home/danielko/.local/lib/python3.9/site-packages/pip (python 3.9)```
 
-## Prerequisites
+### Prerequisites
 
 ```pip3 install lxml```
-
-### Environment
-
-| Item           | Requirements                                          | Comments                                                     |
-| -------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
-| OS             | Debian-based distribution, e.g., Ubuntu or Windows 10 | This version was tested on Ubuntu 18.04 under WSL2 on Windows 11 and Windows 10. |
-| Python         | v3.9+                                                 | This version was tested on OS with Python 3.9.               |
-| Docker         | v20+                                                  | This version was tested with Docker v20.10.7 (64-bit).       |
-| Docker-Compose | v1.29.2                                               | This version was tested with Docker-Compose v1.29.2.         |
-
-### Python Modules
-
-| Item | Requirements | Comments                                  |
-| ---- | ------------ | ----------------------------------------- |
-| lxml | v4.6.3       | This version was tested with lxml v4.6.3. |
 
 ## Installation Process
 ### Runtime
