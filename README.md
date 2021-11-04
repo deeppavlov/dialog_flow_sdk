@@ -12,11 +12,17 @@ This is an early alpha version of the DD-IDDE SDK. It is used in combination wit
 | Docker         | v20+                                                  | This version was tested with Docker v20.10.7 (64-bit).       |
 | Docker-Compose | v1.29.2                                               | This version was tested with Docker-Compose v1.29.2.         |
 
-### VS Code Extensions
+### VS Code
+#### Required Extensions
 * DD-IDDE
 * Python
-* Remote - WSL (required if you are running this on Ubuntu 18.04 through WSL/WSL2)
 * Docker
+
+#### Optional Extensions
+* Remote - WSL 
+
+#### Set WSL-based Terminal As Default One
+If needed, set your WSL-based terminal app as the default one in your VS Code by following these [instructions](https://dev.to/giannellitech/setting-the-default-terminal-in-vs-code-95c).
 
 ### Python 3.9 - set as default (optional)
 1. Install the python3.9 package using apt-get
