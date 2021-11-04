@@ -13,10 +13,10 @@ This is an early alpha version of the DD-IDDE SDK. It is used in combination wit
 | Docker-Compose | v1.29.2                                               | This version was tested with Docker-Compose v1.29.2.         |
 
 ### VS Code Extensions
-DD-IDDE
-Python
-WSL
-Docker
+* DD-IDDE
+* Python
+* Remote - WSL (required if you are running this on Ubuntu 18.04 through WSL/WSL2)
+* Docker
 
 ### Python 3.9 - set as default (optional)
 1. Install the python3.9 package using apt-get
@@ -66,14 +66,26 @@ Follow these requirements to prepare DD-IDDE SDK to run on your machine:
 pip install -r requirements.txt
 ```
 
-## Discourse Moves Recommendation System
+### Discourse Moves Recommendation System
 We use our Speech Functions Classifier & Predictor from our larger [DeepPavlov Dream](https://www.github.com/deepmipt/dream) Multiskill AI Assistant Platform.
 
 Follow these instructions to run the Discourse Moves Recommendation System:
 ```bash 
 docker-compose up -d --build
 ```
-After that sf predictor is availible on `localhost:8107/annotation` and sf classifier is availible on `localhost:8108/annotation` 
+After that sf predictor is available on `localhost:8107/annotation` and sf classifier is availible on `localhost:8108/annotation` 
+
+## Usage
+### DD-IDDE as Designer
+Go to your local clone of this repo and run:
+
+```code .```
+
+This will ensure that your VS Code will run from this folder, and will (in case you use WSL) run through WSL.
+
+### Discourse Moves Recommendation System
+TBD
+
 ## Generic Responses
 TBD
 ## Entity Detection
