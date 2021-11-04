@@ -28,33 +28,33 @@ def get_sf(ctx: Context):
         speech_functions = requests.post(SF_URL, json=requested_data).json()
         logger.info(f"current speech function {speech_functions}")
         ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
-    except Exception as exc:
-        logger.exception(exc)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
 
 
 def get_sfp(ctx: Context):
     try:
-        last_sf = ctx.misc["speech_functions"][-1][-1]
+        last_sf = ctx.misc.get("speech_functions", [[None]])[-1][-1]
         requested_data = [last_sf]
         sf_predictions = requests.post(SFP_URL, json=requested_data).json()
         ctx.misc["sf_predictions"] = ctx.misc.get("sf_predictions", []) + sf_predictions[-1][0]["prediction"]
-    except Exception as exc:
-        logger.exception(exc)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
 
 
 def get_midas(ctx: Context):
     try:
-            last_response = ctx.last_response if ctx.last_response else "hi"
-            requested_data = {
-                "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
-            }
-            midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
-            logger.info(f"midas {midas}")
-            ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
-    except Exception as exc:
-        logger.exception(exc)
+        last_response = ctx.last_response if ctx.last_response else "hi"
+        requested_data = {
+            "dialogs": [{"human_utterances": [{"text": ctx.last_request}], "bot_utterances": [{"text": last_response}]}]
+        }
+        midas = requests.post(MIDAS_URL, json=requested_data).json()[0]
+        logger.info(f"midas {midas}")
+        ctx.misc["midas"] = ctx.misc.get("midas", []) + midas
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
 
 
@@ -68,8 +68,8 @@ def get_entities(ctx: Context):
         entities = requests.post(ENTITY_DETECTION_URL, json=requested_data).json()
         logger.info(f"entity detection {entities}")
         ctx.misc["entity_detection"] = ctx.misc.get("entity_detection", []) + entities
-    except Exception as exc:
-        logger.exception(exc)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
 
 
@@ -81,8 +81,8 @@ def get_entity_ids(ctx: Context):
         el_output = requests.post(ENTITY_LINKING_URL, json=requested_data).json()
         logger.info(f"entity_linking {el_output}")
         ctx.misc["entity_linking"] = ctx.misc.get("entity_linking", []) + el_output
-    except Exception as exc:
-        logger.exception(exc)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
 
 
@@ -95,6 +95,6 @@ def get_wiki_parser_triplets(ctx: Context):
             requested_data = {"parser_info": parser_info, "query": [el_output], "utt_num": len(utterances)}
             wp_output = requests.post(WIKI_PARSER_URL, json=requested_data).json()
             ctx.misc["wiki_parser"] = ctx.misc.get("wiki_parser", []) + wp_output
-    except Exception as exc:
-        logger.exception(exc)
+    except requests.exceptions.ConnectionError as exc:
+        logger.warning(exc)
     return ctx
