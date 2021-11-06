@@ -4,7 +4,7 @@ from dff.core.keywords import TRANSITIONS, RESPONSE, MISC
 from dff.core import Actor
 import dff.conditions as cnd
 
-from utils import condition as dm_cnd
+from utils import condition as loc_cnd
 from utils import common
 
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 plot = {
     "greeting_flow": {
         "start_node": {
-            TRANSITIONS: {"greet_and_ask_about_pets": cnd.all([dm_cnd.is_sf("Open.Demand.Fact")])},
+            TRANSITIONS: {"greet_and_ask_about_pets": cnd.all([loc_cnd.is_sf("Open.Demand.Fact")])},
             RESPONSE: "Hi %username%!",
             MISC: {"speech_functions": ["Open.Attend"]},
         },
@@ -24,17 +24,17 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                loc_cnd.is_sf("React.Respond.Support.Reply.Agree"),
+                                loc_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
+                        cnd.all([loc_cnd.is_sf("React.Rejoinder"), loc_cnd.is_midas("pos_answer")]),
                     ]
                 ),
                 "sad_and_say_about_pets": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
+                        loc_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
+                        cnd.all([loc_cnd.is_sf("React.Rejoinder"), loc_cnd.is_midas("neg_answer")]),
                     ]
                 ),
             },
@@ -44,7 +44,7 @@ plot = {
         },
         "cool_and_clarify_which_pets": {
             TRANSITIONS: {
-                "tell_me_more_about_fav_pets": cnd.all([dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve")])
+                "tell_me_more_about_fav_pets": cnd.all([loc_cnd.is_sf("React.Rejoinder.Support.Response.Resolve")])
             },
             RESPONSE: "Oh, cool! What animals do you like the most?",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},

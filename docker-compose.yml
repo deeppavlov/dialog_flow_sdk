@@ -125,4 +125,20 @@ services:
           memory: 256M
         reservations:
           memory: 256M
+
+  intent-catcher:
+    env_file: [.env]
+    build:
+      context: ./annotators/intent_catcher/
+    command:  python -m flask run -h 0.0.0.0 -p 8014 --without-threads
+    ports:
+      - 8014:8014
+    environment:
+      - FLASK_APP=server
+    deploy:
+      resources:
+        limits:
+          memory: 3.5G
+        reservations:
+          memory: 3.5G
 version: '3.7'

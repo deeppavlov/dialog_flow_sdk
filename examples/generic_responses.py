@@ -5,7 +5,7 @@ from dff.core import Actor
 import dff.conditions as cnd
 import dff.labels as lbl
 
-from utils import condition as dm_cnd
+from utils import condition as loc_cnd
 from utils import common
 from utils.generic_responses import generic_response_condition, generic_response_generate
 
@@ -17,7 +17,7 @@ plot_extended = {
     "greeting_flow": {
         "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
             RESPONSE: "",
-            TRANSITIONS: {"node1": cnd.all([dm_cnd.is_sf("Open.Give.Opinion"), dm_cnd.is_midas("pos_answer")])},
+            TRANSITIONS: {"node1": cnd.all([loc_cnd.is_sf("Open.Give.Opinion"), loc_cnd.is_midas("pos_answer")])},
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"

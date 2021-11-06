@@ -2,7 +2,15 @@ import logging
 from typing import Optional, Union
 
 from dff.core import Context, Actor
-from .services import get_sf, get_sfp, get_midas, get_entities, get_entity_ids, get_wiki_parser_triplets
+from .services import (
+    get_sf,
+    get_sfp,
+    get_midas,
+    get_entities,
+    get_entity_ids,
+    get_wiki_parser_triplets,
+    get_intent_and_ext_sf,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +32,7 @@ def turn_handler(
     ctx = get_entities(ctx)
     ctx = get_entity_ids(ctx)
     ctx = get_wiki_parser_triplets(ctx)
+    ctx = get_intent_and_ext_sf(ctx)
 
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
