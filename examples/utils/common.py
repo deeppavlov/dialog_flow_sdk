@@ -2,7 +2,7 @@ import logging
 from typing import Optional, Union
 
 from dff.core import Context, Actor
-from .services import get_sf, get_midas
+from .services import get_sf, get_sfp, get_midas, get_entities, get_entity_ids, get_wiki_parser_triplets
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,11 @@ def turn_handler(
     # Add in current context a next request of user
     ctx.add_request(in_request)
     ctx = get_sf(ctx)
+    ctx = get_sfp(ctx)
     ctx = get_midas(ctx)
+    ctx = get_entities(ctx)
+    ctx = get_entity_ids(ctx)
+    ctx = get_wiki_parser_triplets(ctx)
 
     # pass the context into actor and it returns updated context with actor response
     ctx = actor(ctx)
@@ -38,6 +42,7 @@ def run_test(actor, testing_dialog):
     for in_request, true_out_response in testing_dialog:
         _, ctx = turn_handler(in_request, ctx, actor, true_out_response=true_out_response)
     logger.info(ctx)
+
 
 # interactive mode
 def run_interactive_mode(actor):
