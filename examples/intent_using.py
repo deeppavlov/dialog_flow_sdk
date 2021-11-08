@@ -16,7 +16,7 @@ plot = {
             TRANSITIONS: {"node1": loc_cnd.is_intent("topic_switching")},
         },
         "node1": {
-            RESPONSE: "What do you want to talk about?", 
+            RESPONSE: "What do you want to talk about?",
             TRANSITIONS: {"node2": loc_cnd.is_intent("lets_chat_about")},
         },
         "node2": {

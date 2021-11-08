@@ -41,7 +41,7 @@ def get_sfp(ctx: Context):
         sf_predictions = requests.post(SFP_URL, json=requested_data).json()
         sf_predictions = sf_predictions[-1] if sf_predictions else []
         sf_predictions = sf_predictions[0] if sf_predictions else {}
-        sf_predictions = sf_predictions.get('prediction', "None")
+        sf_predictions = sf_predictions.get("prediction", "None")
         logger.info(f"current sf_predictions {sf_predictions}")
         ctx.misc["sf_predictions"] = ctx.misc.get("sf_predictions", []) + [sf_predictions]
     except requests.exceptions.ConnectionError as exc:
@@ -112,8 +112,16 @@ intent2ext_sf = {
     "exit": [],
     "tell_me_a_story": [],
     "repeat": [],
-    "yes": [],
-    "no": [],
+    "yes": [
+        "React.Respond.Support.Reply.Acknowledge",
+        "React.Respond.Support.Reply.Agree",
+        "React.Respond.Support.Reply.Affirm",
+    ],
+    "no": [
+        "React.Respond.Confront.Reply.Disagree",
+        "React.Respond.Confront.Reply.Disavow",
+        "React.Respond.Confront.Reply.Contradict",
+    ],
     "dont_understand": [],
     "stupid": [],
     "cant_do": [],
@@ -125,7 +133,7 @@ intent2ext_sf = {
     "choose_topic": [],
     "who_made_you": [],
     "what_is_your_job": [],
-    "opinion_request": [],
+    "opinion_request": ["Open.Demand.Opinion", "React.Rejoinder.Support.Track.Clarify"],
     "doing_well": [],
     "what_time": [],
 }
