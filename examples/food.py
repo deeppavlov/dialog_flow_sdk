@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 def add_prompt_processing(ctx: Context, actor: Actor, *args, **kwargs) -> Context:
     if generic_response_condition(ctx, actor, *args, **kwargs):
         response = generic_response_generate(ctx, actor, *args, **kwargs)
+        logger.error(f"{response=}")
         processed_node = ctx.a_s.get("processed_node", ctx.a_s["next_node"])
         processed_node.response = f"{response} {processed_node.response}"
         ctx.a_s["processed_node"] = processed_node

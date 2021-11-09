@@ -223,7 +223,7 @@ def generic_response_generate(ctx: Context, actor: Actor, *args, **kwargs):
         sf_functions = None
         cont = False
 
-        if is_last_bot_utterance_by_us(ctx) or len(word_tokenize(human_utterance)) > 10:
+        if is_last_bot_utterance_by_us(ctx) or len(word_tokenize(human_utterance)) > 3:
             # check for "?" symbol in the standalone segments of the original user's utterance
             for phrase in phrases:
                 if "?" not in phrase:
