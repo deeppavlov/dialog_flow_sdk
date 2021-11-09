@@ -21,13 +21,18 @@ def get_sf(ctx: Context):
         last_response = ctx.last_response
         last_request = ctx.last_request
         prev_speech_function = ctx.misc.get("speech_functions", [[None]])[-1][-1]
-        requested_data = {
-            "phrase": sent_tokenize(last_request),
-            "prev_phrase": last_response,
-            "prev_speech_function": prev_speech_function,
-        }
-        speech_functions = requests.post(SF_URL, json=requested_data).json()
-        logger.info(f"current speech function {speech_functions}")
+        sents = sent_tokenize(last_request)
+        speech_functions = []
+        for sent in sents:
+            requested_data = {
+                "phrase": [sent],
+                "prev_phrase": last_response,
+                "prev_speech_function": prev_speech_function,
+            }
+            speech_function = requests.post(SF_URL, json=requested_data).json()
+            logger.info(f"current speech function {speech_function=}")
+            speech_functions += speech_function
+        logger.info(f"----------current speech function {speech_functions}")
         ctx.misc["speech_functions"] = ctx.misc.get("speech_functions", []) + speech_functions
     except requests.exceptions.ConnectionError as exc:
         logger.warning(exc)
