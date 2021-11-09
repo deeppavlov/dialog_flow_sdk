@@ -517,6 +517,11 @@ def find_top_triplets(entity, entity_substr, pos=None, token_conf=None, conf=Non
             ("P102", "member of political party"),
             ("P26", "spouse"),
             ("P451", "partner"),
+            ("P186", "made from material"), #food
+            ("P527", "has part"), #food
+            ("P2012", "cuisine"), #food
+            ("P495", "country of origin"), #food
+            ("P1382", "partially coincident with"), #food
         ]:
             objects = find_object(entity, rel_id, "")
             objects_info = find_objects_info(objects)

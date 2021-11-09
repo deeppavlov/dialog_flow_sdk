@@ -1,5 +1,5 @@
 import logging
-from dff.core.keywords import TRANSITIONS, RESPONSE
+from dff.core.keywords import TRANSITIONS, RESPONSE, MISC
 from dff.core import Actor
 import dff.conditions as cnd
 
@@ -29,15 +29,19 @@ plot = {
         "start_node": {  # This is an initial node, it doesn't need an `RESPONSE`
             RESPONSE: "",
             # TRANSITIONS: {"node1": cnd.exact_match("Hi")},  # If "Hi" == request of user then we make the transition
-            TRANSITIONS: {"node1": cnd.all([loc_cnd.is_sf("Open.Give.Opinion"), loc_cnd.is_midas("pos_answer")])},
+            TRANSITIONS: {
+                "node1": cnd.all([loc_cnd.is_sf("Open.Give.Opinion"), loc_cnd.is_midas("pos_answer")])
+            },
+            MISC: {"speech_functions": ["start_node"]},
         },
         "node1": {
             RESPONSE: "Hi, how are you?",  # When the agent goes to node1, we return "Hi, how are you?"
             TRANSITIONS: {"node2": cnd.exact_match("i'm fine, how are you?")},
         },
-        "node2": {
+        "new_node": {
             RESPONSE: "Good. What do you want to talk about?",
             TRANSITIONS: {"node3": cnd.exact_match("Let's talk about music.")},
+            MISC: {"speech_functions": ["Open.Attend"]},
         },
         "node3": {
             RESPONSE: "Sorry, I can not talk about music now.",
@@ -46,10 +50,12 @@ plot = {
         "node4": {
             RESPONSE: "bye",
             TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+            MISC: {"speech_functions": ["Open.Attend"]},
         },
         "fallback_node": {  # We get to this node if an error occurred while the agent was running
             RESPONSE: "Ooops",
             TRANSITIONS: {"node1": cnd.exact_match("Hi")},
+            MISC: {"speech_functions": ["fallback_node"]},
         },
     },
 }

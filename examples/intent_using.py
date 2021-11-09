@@ -13,7 +13,10 @@ plot = {
     "greeting_flow": {
         "start_node": {
             RESPONSE: "",
-            TRANSITIONS: {"node1": loc_cnd.is_intent("topic_switching")},
+            TRANSITIONS: {
+                # "node1": loc_cnd.is_intent("topic_switching")
+                "node1": cnd.exact_match('hi'),
+                },
         },
         "node1": {
             RESPONSE: "What do you want to talk about?",
