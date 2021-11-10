@@ -1,4 +1,5 @@
 import logging
+import pathlib
 
 from dff.core.keywords import TRANSITIONS, RESPONSE, MISC, PROCESSING, GLOBAL
 from dff.core import Actor, Context
@@ -9,6 +10,13 @@ from utils import condition as dm_cnd
 from utils import common
 from utils.entity_detection import has_entities, entity_extraction, slot_filling
 from utils.generic_responses import generic_response_condition, generic_response_generate
+
+import dff_node_stats
+
+LOCATION = pathlib.Path(__file__).parent.resolve()
+stats_file = LOCATION / "stats.csv"
+if stats_file.exists():
+    stats_file.unlink()
 
 
 logger = logging.getLogger(__name__)
@@ -420,6 +428,8 @@ actor = Actor(
     fallback_label=("food_flow", "fallback_node"),
 )
 
+stats = dff_node_stats.Stats(csv_file=stats_file)
+stats.update_actor_handlers(actor, auto_save=True)
 
 if __name__ == "__main__":
     logging.basicConfig(

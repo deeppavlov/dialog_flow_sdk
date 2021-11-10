@@ -98,6 +98,20 @@ Go to your local clone of this repo and run:
 
 This will ensure that your VS Code will run from this folder, and will (in case you use WSL) run through WSL.
 
+### Dashboard
+Create ssh tunnel:
+```
+ssh -L 8501:localhost:8501 $HOST
+```
+Collect stats by run:
+```
+python examples/food.py 
+```
+After that run dashboard:
+```
+streamlit run examples/stats_dashboard.py
+```
+
 ### Discourse Moves Recommendation System
 TBD
 
