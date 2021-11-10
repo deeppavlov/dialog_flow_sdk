@@ -103,7 +103,10 @@ Create ssh tunnel:
 ```
 ssh -L 8501:localhost:8501 $HOST
 ```
-Collect stats by run:
+Collect stats for food topic:
+```
+python examples/food.py 
+Collect stats for artificial dialog:
 ```
 python examples/food.py 
 ```
