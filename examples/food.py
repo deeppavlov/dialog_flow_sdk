@@ -45,7 +45,6 @@ plot = {
             TRANSITIONS: {
                 "greeting_node": dm_cnd.is_sf("Open"),
                 # "greeting_node": always_true(),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "",
             MISC: {"speech_functions": ["Open.Attend"]},
@@ -93,7 +92,6 @@ plot = {
                         dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve"),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Hi! I was thinking about food when you texted... I'm dreaming about lasagna! Do you like it?",
             MISC: {
@@ -127,7 +125,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             MISC: {
                 "speech_functions": ["React.Rejoinder.Support.Develop.Extend", "React.Rejoinder.Support.Track.Clarify"]
@@ -155,7 +152,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Clarify"]},
         },
@@ -184,7 +180,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Oh, we are so similar! So you are a fan of Italian cuisine too, aren't you?",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Probe"]},
@@ -210,7 +205,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Oh :( So you don't like Italian cuisine?",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Probe"]},
@@ -220,7 +214,6 @@ plot = {
                 "fav_italian_dish": cnd.any(
                     [dm_cnd.is_sf("React.Rejoinder.Support"), dm_cnd.is_sf("React.Respond.Support")]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "What's your favorite Italian dish?",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
@@ -229,7 +222,6 @@ plot = {
             TRANSITIONS: {
                 "cuisine": has_entities(["tags:misc"]),
                 "fav_cuisine": cnd.all([dm_cnd.is_sf("React")]),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Then what's your favorite cuisine?",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
@@ -243,7 +235,6 @@ plot = {
             TRANSITIONS: {
                 "really_likes_cuisine": cnd.exact_match("yeah"),
                 "doesnt_want_to_cook": dm_cnd.is_sf("React"),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             MISC: {"speech_functions": ["React.Respond.Support.Register", "Sustain.Continue.Prolong.Elaborate"]},
         },
@@ -270,7 +261,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Yeah, I love it too! Have you ever tried to cook it?",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Clarify"]},
@@ -317,7 +307,6 @@ plot = {
                         ),
                     ],
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Really? Never met a person who liked it!",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Clarify"]},
@@ -344,7 +333,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Okay! And do you like cooking?",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Clarify"]},
@@ -371,7 +359,6 @@ plot = {
                         cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "That's so cool, I'd love to learn how to cook it one day! Do you like cooking?",
             MISC: {"speech_functions": ["React.Respond.Support.Register", "React.Rejoinder.Support.Track.Clarify"]},
@@ -384,7 +371,6 @@ plot = {
                         dm_cnd.is_sf("Open"),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Wow, I just adore people who know how to cook!",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
@@ -397,7 +383,6 @@ plot = {
                         dm_cnd.is_sf("Open"),
                     ]
                 ),
-                # ("generic_responses_flow", "generic_response"): generic_response_condition,
             },
             RESPONSE: "Yep, I understand. Usually cooking is just too much trouble.",
             MISC: {"speech_functions": ["React.Rejoinder.Support.Track.Clarify"]},
