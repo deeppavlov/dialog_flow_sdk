@@ -21,24 +21,14 @@ if stats_file.exists():
 
 logger = logging.getLogger(__name__)
 
-# def always_true():
-#     return True
-
-# def prompted_response(body):
-#     def generate_handler(ctx: Context, actor: Actor, *args, **kwargs):
-#         if generic_response_condition(ctx, actor, *args, **kwargs):
-#             response = generic_response_generate(ctx, actor, *args, **kwargs)
-#             body = f"{response} {body}"
-#         return body
-#     return generate_handler
-
 
 def add_prompt_processing(ctx: Context, actor: Actor, *args, **kwargs) -> Context:
     if generic_response_condition(ctx, actor, *args, **kwargs):
         response = generic_response_generate(ctx, actor, *args, **kwargs)
         logger.error(f"{response=}")
         processed_node = ctx.a_s.get("processed_node", ctx.a_s["next_node"])
-        processed_node.response = f"{response} {processed_node.response}"
+        dot = '.'
+        processed_node.response = f"{response}{dot} {processed_node.response}"
         ctx.a_s["processed_node"] = processed_node
     return ctx
 
@@ -46,13 +36,11 @@ def add_prompt_processing(ctx: Context, actor: Actor, *args, **kwargs) -> Contex
 plot = {
     GLOBAL: {
         PROCESSING: {3: add_prompt_processing},
-        # TRANSITIONS: {("generic_responses_flow", "generic_response", 0.5): generic_response_condition},
     },
     "food_flow": {
         "start_node": {
             TRANSITIONS: {
                 "greeting_node": dm_cnd.is_sf("Open"),
-                # "greeting_node": always_true(),
             },
             RESPONSE: "",
             MISC: {"speech_functions": ["Open.Attend"]},
@@ -78,19 +66,13 @@ plot = {
                             [
                                 dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
                                 dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
-                                # dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                # dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        # cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        # cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),
                     ]
                 ),
                 "doesnt_like_lasagna": cnd.any(
                     [
                         dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
-                        # cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        # cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]), # костыль
                     ]
                 ),
                 "confused_bot": cnd.any(
@@ -118,12 +100,10 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),
                     ]
                 ),
                 "doesnt_want_to_cook": cnd.any(
@@ -145,19 +125,15 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
-                                cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
                     ]
                 ),
                 "doesnt_like_lasagna": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
                     ]
                 ),
             },
@@ -169,23 +145,15 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
-                            ]
-                        ),
-                        cnd.any(
-                            [
-                                cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                                cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
                     ]
                 ),
                 "doesnt_like_cuisine": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
                     ]
                 ),
             },
@@ -198,19 +166,15 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),  # костыль
                     ]
                 ),
                 "doesnt_like_cuisine": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
                     ]
                 ),
             },
@@ -252,21 +216,17 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),  # костыль
                     ]
                 ),
                 "doesnt_want_to_cook": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
                         dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve"),
-                        dm_cnd.is_sf("React.Respond.Support.Develop"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
+                        dm_cnd.is_sf("React.Respond.Support.Develop")
                     ]
                 ),
             },
@@ -279,8 +239,8 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
                         cnd.all(
@@ -291,15 +251,14 @@ plot = {
                                         dm_cnd.is_sf("React.Respond.Support.Develop.Extend"),
                                         dm_cnd.is_sf("React.Respond.Support.Develop.Enhance"),
                                     ]
-                                ),
-                                dm_cnd.is_midas("pos_answer"),
+                                )
                             ]
                         ),
                     ],
                 ),
                 "doesnt_like_cuisine": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
                         dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve"),
                         cnd.all(
                             [
@@ -309,8 +268,7 @@ plot = {
                                         dm_cnd.is_sf("React.Respond.Support.Develop.Extend"),
                                         dm_cnd.is_sf("React.Respond.Support.Develop.Enhance"),
                                     ]
-                                ),
-                                dm_cnd.is_midas("neg_answer"),
+                                )
                             ]
                         ),
                     ],
@@ -325,20 +283,16 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),  # костыль
                     ]
                 ),
                 "cooking_is_trouble": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
+                        dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve")
                     ]
                 ),
             },
@@ -351,20 +305,16 @@ plot = {
                     [
                         cnd.any(
                             [
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Agree"),
-                                dm_cnd.is_sf("React.Respond.Support.Reply.Affirm"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Agree"),
+                                dm_cnd.is_ext_sf("React.Respond.Support.Reply.Affirm"),
                             ]
                         ),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("pos_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("pos_answer")]),  # костыль
                     ]
                 ),
                 "cooking_is_trouble": cnd.any(
                     [
-                        dm_cnd.is_sf("React.Respond.Confront.Reply.Disagree"),
-                        dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve"),
-                        cnd.all([dm_cnd.is_sf("React.Rejoinder"), dm_cnd.is_midas("neg_answer")]),
-                        cnd.all([dm_cnd.is_sf("React.Respond"), dm_cnd.is_midas("neg_answer")]),  # костыль
+                        dm_cnd.is_ext_sf("React.Respond.Confront.Reply.Disagree"),
+                        dm_cnd.is_sf("React.Rejoinder.Support.Response.Resolve")
                     ]
                 ),
             },
