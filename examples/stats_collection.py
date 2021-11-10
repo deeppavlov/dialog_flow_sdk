@@ -143,10 +143,7 @@ ctxs = {}
 for i in tqdm.tqdm(range(300)):
     for j in range(4):
         ctx = ctxs.get(j, Context(id=uuid.uuid4()))
-        if len(ctx.labels) >= 2:
-            label = list(actor.labels.values())[-2]
-        else:
-            label = actor.fallback_label[:2]
+        label = ctx.last_label if ctx.last_label else actor.fallback_label
         flow, node = label[:2]
         if [flow, node] == ["root", "fallback"]:
             ctx = Context()
