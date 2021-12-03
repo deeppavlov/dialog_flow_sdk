@@ -1,4 +1,4 @@
-## Welcome to DD-IDE SDK
+## Welcome to DD-IDDE SDK
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
 ## Requirements
