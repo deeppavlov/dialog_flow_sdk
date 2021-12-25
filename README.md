@@ -65,12 +65,12 @@ Test the version of python used by pip3 command:
 
 ## Installation Process
 ### Runtime
-We use [Dialog Flow Framework](https://www.github.com/deepmipt/dialog_flow_framework) as the runtime for the open-domain/scenario-driven chatbots.
+We use [Dialog Flow Engine](https://www.github.com/deepmipt/dialog_flow_engine) as the runtime for the open-domain/scenario-driven chatbots.
 
-Follow these instructions to install Dialog Flow Framework:
+Follow these instructions to install Dialog Flow Engine:
 ```bash
-# install dff
-pip install dff
+# install df_engine
+pip install df_engine
 # install dashboard for stats
 pip install dff-node-stats[dashboard] 
 ```
