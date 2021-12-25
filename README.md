@@ -1,4 +1,4 @@
-## Welcome to DD-IDE SDK
+## Welcome to Dialog Flow SDK
 This is an early alpha version of the DD-IDDE SDK. It is used in combination with the DeepPavlov's DD-IDDE available [here](https://github.com/deepmipt/vscode-dff).
 
 ## Requirements
@@ -65,9 +65,9 @@ Test the version of python used by pip3 command:
 
 ## Installation Process
 ### Runtime
-We use [Dialog Flow Framework](https://www.github.com/deepmipt/dialog_flow_framework) as the runtime for the open-domain/scenario-driven chatbots.
+We use [Dialog Flow Engine](https://www.github.com/deepmipt/dialog_flow_engine) as the runtime for the open-domain/scenario-driven chatbots.
 
-Follow these instructions to install Dialog Flow Framework:
+Follow these instructions to install Dialog Flow Engine:
 ```bash
 # install df_engine
 pip install df_engine
