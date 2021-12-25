@@ -1,10 +1,10 @@
 import logging
 import pathlib
 
-from dff.core.keywords import TRANSITIONS, RESPONSE, MISC, PROCESSING, GLOBAL
-from dff.core import Actor, Context
-import dff.conditions as cnd
-import dff.labels as lbl
+from df_engine.core.keywords import TRANSITIONS, RESPONSE, MISC, PROCESSING, GLOBAL
+from df_engine.core import Actor, Context
+import df_engine.conditions as cnd
+import df_engine.labels as lbl
 
 from utils import condition as dm_cnd
 from utils import common

@@ -1,7 +1,7 @@
 import logging
-from dff.core.keywords import TRANSITIONS, RESPONSE, MISC
-from dff.core import Actor
-import dff.conditions as cnd
+from df_engine.core.keywords import TRANSITIONS, RESPONSE, MISC
+from df_engine.core import Actor
+import df_engine.conditions as cnd
 
 from utils import condition as loc_cnd
 from utils import common

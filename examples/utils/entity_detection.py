@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Optional, Tuple
 
-from dff.core import Context, Actor, Node
+from df_engine.core import Context, Actor, Node
 
 logger = logging.getLogger(__name__)
 

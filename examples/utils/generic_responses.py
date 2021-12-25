@@ -5,9 +5,9 @@ import re
 import spacy
 import nltk
 from nltk import word_tokenize
-import dff.labels as lbl
-from dff.core.keywords import TRANSITIONS, RESPONSE
-from dff.core import Context, Actor
+import df_engine.labels as lbl
+from df_engine.core.keywords import TRANSITIONS, RESPONSE
+from df_engine.core import Context, Actor
 
 from utils import sf_utils
 

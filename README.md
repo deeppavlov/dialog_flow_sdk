@@ -7,8 +7,8 @@ This is an early alpha version of the DD-IDDE SDK. It is used in combination wit
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 
-# install dff
-pip install dff
+# install df_engine
+pip install df_engine
 # install dashboard for stats
 pip install dff-node-stats[dashboard] 
 ```
@@ -69,8 +69,8 @@ We use [Dialog Flow Framework](https://www.github.com/deepmipt/dialog_flow_frame
 
 Follow these instructions to install Dialog Flow Framework:
 ```bash
-# install dff
-pip install dff
+# install df_engine
+pip install df_engine
 # install dashboard for stats
 pip install dff-node-stats[dashboard] 
 ```
