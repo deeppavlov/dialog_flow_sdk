@@ -1,0 +1,65 @@
+services:
+
+  speech-function-classifier:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8108
+      - PORT=8108
+
+  speech-function-predictor:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8107
+      - PORT=8107
+
+  midas-classification:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8090
+      - PORT=8090
+
+  entity-detection:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8103
+      - PORT=8103
+  
+  entity-linking:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8075
+      - PORT=8075
+
+  wiki-parser:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8177
+      - PORT=8177
+
+  intent-catcher:
+    command: [ "nginx", "-g", "daemon off;" ]
+    build:
+      context: proxy/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PASS=lnsigo.mipt.ru:8014
+      - PORT=8014
+version: '3.7'
