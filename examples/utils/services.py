@@ -1,7 +1,7 @@
 import logging
 import os
 
-from df_engine.core import Context
+from dff.core import Context
 import requests
 from nltk.tokenize import sent_tokenize
 

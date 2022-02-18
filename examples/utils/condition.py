@@ -1,6 +1,6 @@
 import logging
 
-from df_engine.core import Context, Actor
+from dff.core import Context, Actor
 
 logger = logging.getLogger(__name__)
 

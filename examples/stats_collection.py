@@ -4,9 +4,9 @@ import pathlib
 
 import tqdm
 
-from df_engine.core.keywords import RESPONSE, TRANSITIONS
-from df_engine.core import Context, Actor
-import df_engine.conditions as cnd
+from dff.core.keywords import RESPONSE, TRANSITIONS
+from dff.core import Context, Actor
+import dff.conditions as cnd
 
 import dff_node_stats
 
